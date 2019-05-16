@@ -2,18 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BLL.Mappings;
+using BLL.Services.Implementation;
+using BLL.Services.Interface;
+using DAL;
+using HBR.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace HBR
 {
     public class Startup
     {
+        //TODO: connection string better handling
+        private readonly string localConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=Hbr;Integrated Security=True";
+        private readonly string azureConnectionString = "Data Source=tcp:hbr.database.windows.net,1433;Initial Catalog=HbrDatabase;User Id=amocsari@hbr.database.windows.net;Password=19Witchking65;";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,7 +36,20 @@ namespace HBR
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddScoped<IHbrDbContext, HbrDbContext>();
+            services.AddMvc(c => c.Filters.Add(typeof(ExceptionFilter))).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDbContext<HbrDbContext>(options => options.UseSqlServer(azureConnectionString));
+            services.AddSingleton(service => Mappings.Configure());
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IBookmarkService, BookmarkService>();
+            services.AddScoped<IGenreService, GenreService>();
+            services.AddScoped<IGoodReadsApiService, GoodReadsApiService>();
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "HBR", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,6 +59,16 @@ namespace HBR
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HBR");
+            });
 
             app.UseMvc();
         }
