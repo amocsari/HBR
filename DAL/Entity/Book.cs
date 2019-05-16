@@ -26,6 +26,9 @@ namespace DAL.Entity
         [Required]
         public bool Deleted { get; set; }
 
+        [Required]
+        public string Extension { get; set; }
+
         public virtual Genre Genre { get; set; }
         public virtual ICollection<Bookmark> Bookmarks { get; set; }
     }

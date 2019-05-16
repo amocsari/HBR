@@ -14,7 +14,8 @@ namespace DAL.Seeds
                     Title = "The Fellowship of the Ring",
                     Author = "J. R. R. Tolkien",
                     PageNumber = 248,
-                    GenreId = 1
+                    GenreId = 1,
+                    Extension = "pdf"
                 });
 
             modelBuilder.Entity<Book>()
@@ -24,7 +25,8 @@ namespace DAL.Seeds
                     Title = "The Two Towers",
                     Author = "J. R. R. Tolkien",
                     PageNumber = 249,
-                    GenreId = 1
+                    GenreId = 1,
+                    Extension = "pdf"
                 });
 
             modelBuilder.Entity<Book>()
@@ -34,7 +36,8 @@ namespace DAL.Seeds
                     Title = "The Return of the King",
                     Author = "J. R. R. Tolkien",
                     PageNumber = 250,
-                    GenreId = 1
+                    GenreId = 1,
+                    Extension = "pdf"
                 });
 
             modelBuilder.Entity<Book>()
@@ -44,7 +47,8 @@ namespace DAL.Seeds
                     Title = "Rogue One: A Star Wars Story",
                     Author = "Alexander Freed",
                     PageNumber = 195,
-                    GenreId = 2
+                    GenreId = 2,
+                    Extension = "pdf"
                 });
 
             return modelBuilder;

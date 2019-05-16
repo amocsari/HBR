@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,5 +18,7 @@ namespace Common.Request
         public int? GenreId { get; set; }
 
         public bool AutoCompleteData { get; set; }
+
+        public IFormFile File { get; set; }
     }
 }

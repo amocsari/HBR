@@ -1,47 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Blob;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
-        }
+            string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=hbrstorage;AccountKey=qrUsM0vJ6+GXCDpqFc1+6sGP9up6hNy3admWGKDnsdUtjJyrxHUBOMluczT/DhqElOQh4Rm1KOYuZUIkEf3L2Q==;EndpointSuffix=core.windows.net";
+            BlobContinuationToken blobContinuationToken = null;
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
-        {
-            return "value";
-        }
+            if (CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
+            {
+                try
+                {
+                    var cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
+                    var cloudBlobContainer = cloudBlobClient.GetContainerReference("bookcontainer");
+                    var result = await cloudBlobContainer.ListBlobsSegmentedAsync(null, blobContinuationToken);
+                    blobContinuationToken = result.ContinuationToken;
+                    var book = result.Results.First();
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+                    var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync("Arifureta Shokugyou de Sekai Saikyou [WN]_01.pdf");
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+                    var stream = new MemoryStream();
+                    try
+                    {
+                        await reference.DownloadToStreamAsync(stream);
+                        stream.Seek(0, SeekOrigin.Begin);
+                        return File(stream, "application/pdf");
+                    }
+                    catch
+                    {
+                        stream.Dispose();
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -59,5 +60,11 @@ namespace HBR.Controllers
         {
             return _bookService.GetMyBooks();
         }
+
+        //[HttpGet]
+        //public Task<IActionResult> GetBookById(int bookId)
+        //{
+
+        //}
     }
 }

@@ -18,6 +18,7 @@ namespace BLL.Services.Interface
         Task UpdateProgress(UpdateBookProgressRequest request);
 
         Task<BookDto> UpdateBook(UpdateBookRequest request);
+
         Task<List<BookDto>> GetMyBooks();
     }
 }

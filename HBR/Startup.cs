@@ -44,6 +44,7 @@ namespace HBR
             services.AddScoped<IBookmarkService, BookmarkService>();
             services.AddScoped<IGenreService, GenreService>();
             services.AddScoped<IGoodReadsApiService, GoodReadsApiService>();
+            services.AddScoped<IBlobStorageService, BlobStorageService>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
