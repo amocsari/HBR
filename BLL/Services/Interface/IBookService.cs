@@ -20,5 +20,7 @@ namespace BLL.Services.Interface
         Task<BookDto> UpdateBook(UpdateBookRequest request);
 
         Task<List<BookDto>> GetMyBooks();
+
+        Task<BookHeaderDto> FindBookByIsbn(string isbn);
     }
 }

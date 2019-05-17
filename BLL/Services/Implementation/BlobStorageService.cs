@@ -13,7 +13,7 @@ namespace BLL.Services.Implementation
     {
         private const string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=hbrstorage;AccountKey=qrUsM0vJ6+GXCDpqFc1+6sGP9up6hNy3admWGKDnsdUtjJyrxHUBOMluczT/DhqElOQh4Rm1KOYuZUIkEf3L2Q==;EndpointSuffix=core.windows.net";
         private const string containerName = "bookcontainer";
-        public async Task<Stream> GetFileFromStorageAsStream(int bookId, string extension)
+        public async Task<MemoryStream> GetFileFromStorageAsStream(int bookId, string extension)
         {
             if (CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
             {

@@ -4,6 +4,7 @@ using Common.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace HBR.Controllers
@@ -13,16 +14,24 @@ namespace HBR.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IBlobStorageService _blobStorageService;
 
-        public BookController(IBookService bookService)
+        public BookController(IBookService bookService, IBlobStorageService blobStorageService)
         {
             _bookService = bookService;
+            _blobStorageService = blobStorageService;
         }
 
         [HttpGet]
         public Task<List<BookDto>> QueryBooks(QueryBooksRequest request)
         {
             return _bookService.QueryBooks(request);
+        }
+
+        [HttpGet]
+        public Task<BookHeaderDto> FindBookByIsbn(string isbn)
+        {
+            return _bookService.FindBookByIsbn(isbn);
         }
 
         [HttpDelete]
@@ -61,10 +70,12 @@ namespace HBR.Controllers
             return _bookService.GetMyBooks();
         }
 
-        //[HttpGet]
-        //public Task<IActionResult> GetBookById(int bookId)
-        //{
-
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetBookById(int bookId)
+        {
+            var stream = await _blobStorageService.GetFileFromStorageAsStream(bookId, "pdf");
+            //return stream.GetBuffer();
+            return File(stream, "application/pdf");
+        }
     }
 }

@@ -86,6 +86,11 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task<BookHeaderDto> FindBookByIsbn(string isbn)
+        {
+            return await _goodReadsService.FindBookByIsbn(isbn);
+        }
+
         public async Task<List<BookDto>> GetMyBooks()
         {
             //TODO user query (usergroups)

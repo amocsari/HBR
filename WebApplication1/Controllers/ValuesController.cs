@@ -20,7 +20,6 @@ namespace WebApplication1.Controllers
         public async Task<IActionResult> Get()
         {
             string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=hbrstorage;AccountKey=qrUsM0vJ6+GXCDpqFc1+6sGP9up6hNy3admWGKDnsdUtjJyrxHUBOMluczT/DhqElOQh4Rm1KOYuZUIkEf3L2Q==;EndpointSuffix=core.windows.net";
-            BlobContinuationToken blobContinuationToken = null;
 
             if (CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
             {
@@ -29,9 +28,6 @@ namespace WebApplication1.Controllers
                     var cloudBlobClient = storageAccount.CreateCloudBlobClient();
 
                     var cloudBlobContainer = cloudBlobClient.GetContainerReference("bookcontainer");
-                    var result = await cloudBlobContainer.ListBlobsSegmentedAsync(null, blobContinuationToken);
-                    blobContinuationToken = result.ContinuationToken;
-                    var book = result.Results.First();
 
                     var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync("Arifureta Shokugyou de Sekai Saikyou [WN]_01.pdf");
 

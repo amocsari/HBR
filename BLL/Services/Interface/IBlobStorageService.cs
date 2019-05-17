@@ -5,6 +5,6 @@ namespace BLL.Services.Interface
 {
     public interface IBlobStorageService
     {
-        Task<Stream> GetFileFromStorageAsStream(int bookId, string extension);
+        Task<MemoryStream> GetFileFromStorageAsStream(int bookId, string extension);
     }
 }

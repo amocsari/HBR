@@ -1,4 +1,5 @@
 ﻿using BLL.Services.Interface;
+using Common.Dto;
 using DAL.Entity;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,9 +9,31 @@ namespace BLL.Services.Implementation
 {
     public class GoodReadsApiService : IGoodReadsApiService
     {
+        public async Task<BookHeaderDto> FindBookByIsbn(string isbn)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new System.Uri("https://www.goodreads.com");
+                var response = await client.GetAsync($"/search/index.xml?key=Kn9jyCFyPgYJUgV4B1bsw&q={isbn}&search[field]=isbn");
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsAsync<XmlElement>();
+                    return new BookHeaderDto
+                    {
+                        Author = result.SelectSingleNode("/search/results/work/best_book/author/name").FirstChild.Value,
+                        Title = result.SelectSingleNode("/search/results/work/best_book/title").FirstChild.Value
+                    };
+                }
+                else
+                {
+                    throw new HbrException("Error during goodreads query!");
+                }
+            }
+        }
+
         public async Task TryGetGoodReadsData(string isbn, Book entity)
         {
-            using(var client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 client.BaseAddress = new System.Uri("https://www.goodreads.com");
                 var response = await client.GetAsync($"/search/index.xml?key=Kn9jyCFyPgYJUgV4B1bsw&q={isbn}&search[field]=isbn");

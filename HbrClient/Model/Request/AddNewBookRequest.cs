@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HbrClient.Model.Request
+﻿namespace HbrClient.Model.Request
 {
     public class AddNewBookRequest
     {
@@ -17,5 +13,7 @@ namespace HbrClient.Model.Request
         public int? GenreId { get; set; }
 
         public bool AutoCompleteData { get; set; }
+
+        public byte[] File { get; set; }
     }
 }
