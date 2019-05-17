@@ -260,11 +260,11 @@ namespace HbrClient
 
         private async Task InitializeAsync()
         {
+            var dialog = UserDialogs.Instance.Loading("Loading");
             if (CheckInternetConnection())
             {
                 using (var client = new HttpClient())
                 {
-                    var dialog = UserDialogs.Instance.Loading("Loading");
                     try
                     {
                         var response = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
@@ -287,13 +287,13 @@ namespace HbrClient
                     catch (Exception e)
                     {
                     }
-                    dialog.Dispose();
                 }
             }
             else
             {
-
+                GenreList = _database.GetGenres().ToList();
             }
+            dialog.Dispose();
         }
 
         private bool CheckInternetConnection()

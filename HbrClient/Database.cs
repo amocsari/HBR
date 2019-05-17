@@ -47,7 +47,7 @@ namespace HbrClient
             }
         }
 
-        public bool AddElements<T>(IEnumerable<T> newItems) where T : IClientEntity
+        public bool AddElements<T>(IEnumerable<T> newItems)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace HbrClient
             }
         }
 
-        public bool AddElement<T>(T newItem) where T : IClientEntity
+        public bool AddElement<T>(T newItem)
         {
             try
             {
@@ -79,13 +79,28 @@ namespace HbrClient
             }
         }
 
-        public List<T> SelectTable<T>() where T : IClientEntity, new()
+        public List<T> SelectTable<T>() where T : new()
         {
             try
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
                     return connection.Table<T>().ToList();
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                return null;
+            }
+        }
+
+        public List<GenreDto> GetGenres()
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
+                {
+                    return connection.Table<GenreDto>().ToList();
                 }
             }
             catch (SQLiteException ex)
@@ -125,7 +140,7 @@ namespace HbrClient
             }
         }
 
-        public bool RemoveTable<T>(T entity) where T : IClientEntity
+        public bool RemoveTable<T>(T entity)
         {
             try
             {

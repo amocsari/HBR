@@ -20,6 +20,7 @@ namespace HbrClient.Library
         public List<ClientBookDto> Library { get; set; }
         public Context Context { get; set; }
         public RecyclerView RecyclerView { get; set; }
+        Database _database;
 
         public LibraryAdapter(List<ClientBookDto> library, Context context)
         {
@@ -30,6 +31,7 @@ namespace HbrClient.Library
         public LibraryAdapter()
         {
             Library = new List<ClientBookDto>();
+            _database = Database.Instance;
         }
 
         public override int ItemCount => Library.Count;
@@ -77,17 +79,16 @@ namespace HbrClient.Library
                     {
                         var dialog = UserDialogs.Instance.Loading("Loading");
 
+                        var book = Library[position];
+                        
                         using (var client = new HttpClient())
                         {
-                            var book = Library[position];
-                            var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById/{book.BookId}");
-
-                            if (response.IsSuccessStatusCode)
-                            {
-                                Library.RemoveAt(position);
-                                NotifyDataSetChanged();
-                            }
+                            var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById?bookid={book.BookId}");
                         }
+
+                        _database.RemoveTable(book);
+                        Library.RemoveAt(position);
+                        NotifyDataSetChanged();
 
                         dialog.Dispose();
                     }
