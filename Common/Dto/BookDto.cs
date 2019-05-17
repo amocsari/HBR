@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Dto
 {
@@ -15,6 +16,8 @@ namespace Common.Dto
         public int PageNumber { get; set; }
 
         public int? GenreId { get; set; }
+
+        public DateTime LastUpdated { get; set; }
 
         //public virtual Genre Genre { get; set; }
         public List<BookmarkDto> Bookmarks { get; set; }

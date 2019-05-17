@@ -1,4 +1,6 @@
-﻿namespace HbrClient.Model.Dto
+﻿using System;
+
+namespace HbrClient.Model.Dto
 {
     public class BookmarkDto
     {
@@ -7,5 +9,7 @@
         public int BookId { get; set; }
         
         public int PageNumber { get; set; }
+
+        public DateTime LastUpdated { get; set; }
     }
 }

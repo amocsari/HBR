@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace HbrClient.Model.Dto
@@ -16,6 +17,8 @@ namespace HbrClient.Model.Dto
         public int PageNumber { get; set; }
 
         public int? GenreId { get; set; }
+
+        public DateTime LastUpdated { get; set; }
 
         public List<BookmarkDto> Bookmarks { get; set; }
         public GenreDto Genre { get; set; }

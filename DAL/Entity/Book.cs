@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,6 +29,9 @@ namespace DAL.Entity
 
         [Required]
         public string Extension { get; set; }
+
+        [Required]
+        public DateTime LastUpdated { get; set; } = DateTime.Now;
 
         public virtual Genre Genre { get; set; }
         public virtual ICollection<Bookmark> Bookmarks { get; set; }

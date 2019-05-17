@@ -77,12 +77,17 @@
     <Compile Include="Auth\TokenCacheHelper.cs" />
     <Compile Include="Bookmark\BookmarkAdapter.cs" />
     <Compile Include="Bookmark\BookmarkViewHolder.cs" />
-    <Compile Include="Database.cs" />
+    <Compile Include="Database.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="HbrApplication.cs" />
     <Compile Include="Model\Dto\BookDto.cs" />
     <Compile Include="Model\Dto\BookmarkDto.cs" />
     <Compile Include="Model\Dto\ClientBookDto.cs" />
+    <Compile Include="Model\Dto\ClientBookmarkDto.cs" />
+    <Compile Include="Model\Dto\ClientGenreDto.cs" />
     <Compile Include="Model\Dto\GenreDto.cs" />
+    <Compile Include="Model\Dto\IClientEntity.cs" />
     <Compile Include="Model\Request\AddBookToShelfRequest.cs" />
     <Compile Include="Model\Request\AddNewBookRequest.cs" />
     <Compile Include="Model\Request\QueryBooksRequest.cs" />

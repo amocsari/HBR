@@ -18,6 +18,9 @@ namespace DAL.Entity
         [Required]
         public bool Deleted { get; set; }
 
+        [Required]
+        public DateTime LastUpdated { get; set; } = DateTime.Now;
+
         public virtual ICollection<Book> Books { get; set; }
     }
 }
