@@ -17,12 +17,14 @@ namespace BLL.Services.Implementation
         private readonly IHbrDbContext _context;
         private readonly IMapper _mapper;
         private readonly IGoodReadsApiService _goodReadsService;
+        private readonly ITimeService _timeService;
 
-        public BookService(IHbrDbContext context, IMapper mapper, IGoodReadsApiService goodReadsService)
+        public BookService(IHbrDbContext context, IMapper mapper, IGoodReadsApiService goodReadsService, ITimeService timeService)
         {
             _context = context;
             _mapper = mapper;
             _goodReadsService = goodReadsService;
+            _timeService = timeService;
         }
 
         public async Task AddBookToShelf(AddBookToShelfRequest request)
@@ -62,6 +64,7 @@ namespace BLL.Services.Implementation
             entity.PageNumber = request.PageNumber;
             entity.Isbn = request.Isbn;
             entity.GenreId = request.GenreId;
+            entity.LastUpdated = _timeService.UtcNow;
 
             await _context.Books.AddAsync(entity);
             await _context.SaveChangesAsync();
@@ -82,6 +85,7 @@ namespace BLL.Services.Implementation
                 ?? throw new HbrException("Ismeretlen BookId");
 
             entity.Deleted = true;
+            entity.LastUpdated = _timeService.UtcNow;
 
             await _context.SaveChangesAsync();
         }
@@ -89,6 +93,19 @@ namespace BLL.Services.Implementation
         public async Task<BookHeaderDto> FindBookByIsbn(string isbn)
         {
             return await _goodReadsService.FindBookByIsbn(isbn);
+        }
+
+        public async Task<List<BookDto>> GetMissingBooks(GetMissingRequest request)
+        {
+            //TODO user query
+            var missingBooks = await _context.Books
+                .AsNoTracking()
+                .Include(b => b.Genre)
+                .Include(b => b.Bookmarks)
+                .Where(b => !request.IdList.Contains(b.BookId))
+                .ToListAsync();
+
+            return _mapper.Map<List<BookDto>>(missingBooks);
         }
 
         public async Task<List<BookDto>> GetMyBooks()
@@ -155,6 +172,7 @@ namespace BLL.Services.Implementation
             entity.PageNumber = request.PageNumber;
             entity.Isbn = request.Isbn;
             entity.GenreId = request.GenreId;
+            entity.LastUpdated = _timeService.UtcNow;
 
             await _context.SaveChangesAsync();
 

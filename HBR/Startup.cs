@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using BLL.Mappings;
+﻿using BLL.Mappings;
 using BLL.Services.Implementation;
 using BLL.Services.Interface;
 using DAL;
@@ -14,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace HBR
@@ -45,6 +38,7 @@ namespace HBR
             services.AddScoped<IGenreService, GenreService>();
             services.AddScoped<IGoodReadsApiService, GoodReadsApiService>();
             services.AddScoped<IBlobStorageService, BlobStorageService>();
+            services.AddScoped<ITimeService, TimeService>();
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

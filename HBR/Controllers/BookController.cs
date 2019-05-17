@@ -71,6 +71,12 @@ namespace HBR.Controllers
         }
 
         [HttpGet]
+        public Task<List<BookDto>> GetMissingBooks(GetMissingRequest request)
+        {
+            return _bookService.GetMissingBooks(request);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetBookById(int bookId)
         {
             var stream = await _blobStorageService.GetFileFromStorageAsStream(bookId, "pdf");

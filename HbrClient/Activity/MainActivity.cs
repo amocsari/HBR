@@ -16,7 +16,6 @@ using Android.Support.V7.Widget;
 using HbrClient.Library;
 using HbrClient.Model.Dto;
 using HbrClient.Model.Request;
-using Microsoft.AspNetCore.Mvc;
 
 namespace HbrClient
 {
@@ -24,8 +23,9 @@ namespace HbrClient
     public class MainActivity : AppCompatActivity
     {
         private const int get_file_request_code = 1001;
-        private LibraryAdapter mAdapter;
-        private byte[] file;
+        private LibraryAdapter mAdapter = new LibraryAdapter();
+        string AuthorQuery;
+        string TitleQuery;
 
         protected override async void OnCreate(Bundle savedInstanceState)
         {
@@ -37,15 +37,60 @@ namespace HbrClient
             Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
-            await GetBooksFromServer();
-
             var mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView_bookList);
             mRecyclerView.SetAdapter(mAdapter);
             mAdapter.RecyclerView = mRecyclerView;
             mRecyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
+            await GetBooksFromServer();
+
+            var AuthorQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_author_query);
+            var TitleQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_title_query);
+            var QueryButton = FindViewById<Android.Widget.Button>(Resource.Id.button_queryBook);
+
+            AuthorQueryTextView.Click += AuthorQueryTextViewOnClick;
+            TitleQueryTextView.Click += TitleQueryTextViewOnClick;
+            QueryButton.Click += QueryButtonOnClick;
+
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.floatingActionButton_addBook);
             fab.Click += FabOnClick;
+        }
+
+        private async void QueryButtonOnClick(object sender, EventArgs e)
+        {
+            await GetBooksFromServer();
+            AuthorQuery = string.Empty;
+            TitleQuery = string.Empty;
+        }
+
+        private async void TitleQueryTextViewOnClick(object sender, EventArgs e)
+        {
+            var config = new PromptConfig
+            {
+                Title = "Szerző",
+                Text = AuthorQuery,
+                OkText = "Rendben",
+                CancelText = "Mégse"
+            };
+            var result = await UserDialogs.Instance.PromptAsync(config);
+
+            if (result.Ok)
+                AuthorQuery = result.Text;
+        }
+
+        private async void AuthorQueryTextViewOnClick(object sender, EventArgs e)
+        {
+            var config = new PromptConfig
+            {
+                Title = "Cím",
+                Text = TitleQuery,
+                OkText = "Rendben",
+                CancelText = "Mégse"
+            };
+            var result = await UserDialogs.Instance.PromptAsync(config);
+
+            if (result.Ok)
+                TitleQuery = result.Text;
         }
 
         private async void FabOnClick(object sender, EventArgs eventArgs)
@@ -54,15 +99,8 @@ namespace HbrClient
             //intent.AddCategory(Intent.CategoryOpenable);
             //intent.SetType("application/pdf");
             //StartActivityForResult(intent, get_file_request_code);
-            
-            using(var client = new HttpClient())
-            {
-                var result = await client.GetAsync("https://hbr.azurewebsites.net/api/book/getbookbyid?bookid=1");
-                var data = await result.Content.ReadAsByteArrayAsync();
-                OpenPfd(data);
-            }
 
-            //StartActivityForResult(new Intent(this, typeof(BookDetailActivity)), BookDetailActivity.RequestCode);
+            StartActivityForResult(new Intent(this, typeof(BookDetailActivity)), BookDetailActivity.RequestCode);
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
@@ -77,13 +115,14 @@ namespace HbrClient
                 var dialog = UserDialogs.Instance.Loading("Loading");
                 try
                 {
-                    var response = await client.GetAsync("https://hbr.azurewebsites.net/api/book/getmybooks");
+                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/querybooks?Title={TitleQuery}&Author={AuthorQuery}");
 
                     if (response.IsSuccessStatusCode)
                     {
                         var bookList = await response.Content.ReadAsAsync<List<ClientBookDto>>();
 
-                        mAdapter = new LibraryAdapter(bookList, this);
+                        mAdapter.Library.Clear();
+                        mAdapter.AddBook(bookList);
                     }
                 }
                 catch (Exception e)
@@ -225,7 +264,6 @@ namespace HbrClient
 
             Java.IO.File file = new Java.IO.File(externalPath);
             file.SetReadable(true);
-            //Android.Net.Uri uri = Android.Net.Uri.Parse("file://" + filePath);
             Android.Net.Uri uri = Android.Net.Uri.FromFile(file);
             Intent intent = new Intent(Intent.ActionView);
             intent.SetDataAndType(uri, "application/pdf");

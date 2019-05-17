@@ -10,5 +10,6 @@ namespace BLL.Services.Interface
         Task AddBookmark(BookmarkDto dto);
         Task DeleteBookmark(int bookmarkId);
         Task<List<BookmarkDto>> GetBookmarksForBook(int bookId);
+        Task<List<BookmarkDto>> GetMissingBookmarks(GetMissingRequest request);
     }
 }
