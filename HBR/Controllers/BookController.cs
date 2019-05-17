@@ -85,6 +85,22 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
+        public async Task UploadBook(IFormFile formFile, int bookId)
+        {
+            byte[] bFile = null;
+
+            if (formFile != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(memoryStream);
+
+                    _blobStorageService.UploadBook(memoryStream, bookId);
+                }
+            }
+        }
+
+        [HttpPost]
         public Task<List<BookDto>> BulkInsertBooks([FromBody]List<AddNewBookRequest> requestList)
         {
             return _bookService.BulkInsert(requestList);

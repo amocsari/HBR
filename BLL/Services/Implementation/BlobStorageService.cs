@@ -47,5 +47,36 @@ namespace BLL.Services.Implementation
             }
             throw new HbrException("Hiba a fájlszerver elérés közben");
         }
+
+        public async Task UploadBook(MemoryStream stream, int bookId, string extension = "pdf")
+        {
+            if (CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
+            {
+                try
+                {
+                    var fileName = $"{bookId}.{extension}";
+                    var cloudBlobClient = storageAccount.CreateCloudBlobClient();
+                    var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
+
+                    var bbReference = cloudBlobContainer.GetBlockBlobReference(fileName);
+                    if (bbReference.Exists())
+                    {
+                        throw new HbrException("Már létezik ehhez a könyvhöz tartozó file");
+                    }
+
+                    var newReference = cloudBlobContainer.GetBlockBlobReference(fileName);
+                    stream.Position = 0;
+                    newReference.UploadFromStream(stream);
+                }
+                catch(HbrException e)
+                {
+                    throw e;
+                }
+                catch (Exception e)
+                {
+                }
+            }
+            throw new HbrException("Hiba a fájlszerver elérés közben");
+        }
     }
 }
