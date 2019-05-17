@@ -63,6 +63,10 @@ namespace HbrClient
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahText = global::HbrClient.Resource.Styleable.ProgressWheel_ahText;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextColor = global::HbrClient.Resource.Styleable.ProgressWheel_ahTextColor;
 			global::AndroidHUD.Resource.Styleable.ProgressWheel_ahTextSize = global::HbrClient.Resource.Styleable.ProgressWheel_ahTextSize;
+			global::PCLCrypto.Resource.String.ApplicationName = global::HbrClient.Resource.String.ApplicationName;
+			global::PCLCrypto.Resource.String.Hello = global::HbrClient.Resource.String.Hello;
+			global::PCLStorage.Resource.String.ApplicationName = global::HbrClient.Resource.String.ApplicationName;
+			global::PCLStorage.Resource.String.Hello = global::HbrClient.Resource.String.Hello;
 			global::Xamarin.Essentials.Resource.Attribute.font = global::HbrClient.Resource.Attribute.font;
 			global::Xamarin.Essentials.Resource.Attribute.fontProviderAuthority = global::HbrClient.Resource.Attribute.fontProviderAuthority;
 			global::Xamarin.Essentials.Resource.Attribute.fontProviderCerts = global::HbrClient.Resource.Attribute.fontProviderCerts;
@@ -3845,6 +3849,12 @@ namespace HbrClient
 		public partial class String
 		{
 			
+			// aapt resource value: 0x7f0c0028
+			public const int ApplicationName = 2131492904;
+			
+			// aapt resource value: 0x7f0c0027
+			public const int Hello = 2131492903;
+			
 			// aapt resource value: 0x7f0c0000
 			public const int abc_action_bar_home_description = 2131492864;
 			
@@ -3932,11 +3942,11 @@ namespace HbrClient
 			// aapt resource value: 0x7f0c0010
 			public const int abc_toolbar_collapse_description = 2131492880;
 			
-			// aapt resource value: 0x7f0c0029
-			public const int action_settings = 2131492905;
+			// aapt resource value: 0x7f0c002b
+			public const int action_settings = 2131492907;
 			
-			// aapt resource value: 0x7f0c0028
-			public const int app_name = 2131492904;
+			// aapt resource value: 0x7f0c002a
+			public const int app_name = 2131492906;
 			
 			// aapt resource value: 0x7f0c001e
 			public const int appbar_scrolling_view_behavior = 2131492894;
@@ -3947,8 +3957,8 @@ namespace HbrClient
 			// aapt resource value: 0x7f0c0020
 			public const int character_counter_pattern = 2131492896;
 			
-			// aapt resource value: 0x7f0c0027
-			public const int library_name = 2131492903;
+			// aapt resource value: 0x7f0c0029
+			public const int library_name = 2131492905;
 			
 			// aapt resource value: 0x7f0c0021
 			public const int password_toggle_content_description = 2131492897;

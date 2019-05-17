@@ -6,5 +6,6 @@ namespace HbrClient.Model.Dto
     {
         [PrimaryKey, AutoIncrement]
         public int ClientId { get; set; }
+        public bool ModifiedOffline { get; set; }
     }
 }

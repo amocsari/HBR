@@ -65,6 +65,7 @@ namespace BLL.Services.Implementation
             entity.Isbn = request.Isbn;
             entity.GenreId = request.GenreId;
             entity.LastUpdated = _timeService.UtcNow;
+            entity.Extension = "pdf";
 
             await _context.Books.AddAsync(entity);
             await _context.SaveChangesAsync();
@@ -76,6 +77,54 @@ namespace BLL.Services.Implementation
                 .FirstOrDefaultAsync(b => b.BookId == entity.BookId);
 
             return _mapper.Map<BookDto>(newEntity);
+        }
+
+        public async Task<List<BookDto>> BulkInsert(List<AddNewBookRequest> requestList)
+        {
+            var entityList = _mapper.Map<List<Book>>(requestList);
+            foreach (var entity in entityList)
+            {
+                entity.LastUpdated = _timeService.UtcNow;
+                entity.Extension = "pdf";
+            }
+
+            await _context.Books.AddRangeAsync(entityList);
+            await _context.SaveChangesAsync();
+
+            var newEntityList = _context.Books
+                .AsNoTracking()
+                .Include(b => b.Bookmarks)
+                .Include(b => b.Genre)
+                .Where(b => entityList.Any(e => e.BookId == b.BookId));
+
+            var newDtoList = _mapper.Map<List<BookDto>>(newEntityList);
+            return newDtoList;
+        }
+
+        public async Task<List<BookDto>> BulkUpdate(List<UpdateBookRequest> requestList)
+        {
+            var entityList = await _context.Books
+                .Where(b => requestList.Any(r => r.BookId == b.BookId))
+                .Include(b => b.Genre)
+                .Include(b => b.Bookmarks)
+                .ToListAsync();
+
+            foreach (var entity in entityList)
+            {
+                var request = requestList.FirstOrDefault(r => r.BookId == entity.BookId);
+
+                entity.Title = request.Title;
+                entity.Author = request.Author;
+                entity.PageNumber = request.PageNumber;
+                entity.Isbn = request.Isbn;
+                entity.GenreId = request.GenreId;
+                entity.LastUpdated = _timeService.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+
+            var newDtoList = _mapper.Map<List<BookDto>>(entityList);
+            return newDtoList;
         }
 
         public async Task DeleteBookById(int bookId)
@@ -158,7 +207,8 @@ namespace BLL.Services.Implementation
                 try
                 {
                     await _goodReadsService.TryGetGoodReadsData(request.Isbn, entity);
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     entity.Title = request.Title;
                     entity.Author = request.Author;

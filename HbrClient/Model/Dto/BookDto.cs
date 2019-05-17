@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SQLite;
 using System;
 using System.Collections.Generic;
 
@@ -20,7 +21,9 @@ namespace HbrClient.Model.Dto
 
         public DateTime LastUpdated { get; set; }
 
+        [Ignore]//TODO
         public List<BookmarkDto> Bookmarks { get; set; }
+        [Ignore]
         public GenreDto Genre { get; set; }
     }
 }

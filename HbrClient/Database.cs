@@ -6,16 +6,54 @@ namespace HbrClient
 {
     public class Database
     {
-        string folder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
+        private static string dbPath = "/data/data/HbrClient.HbrClient/";
+
+        private static string dbName = "Hbr.db";
+
+        private static Database __instance;
+        public static Database Instance
+        {
+            get
+            {
+                if(__instance == null)
+                {
+                    __instance = new Database();
+                }
+
+                return __instance;
+            }
+        }
+
+        public Database()
+        {
+            CreateDatabase();
+        }
+
         public bool CreateDatabase()
         {
             try
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, "Hbr.db")))
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    connection.CreateTable<ClientBookDto>();
-                    connection.CreateTable<ClientBookmarkDto>();
-                    connection.CreateTable<GenreDto>();
+                    var a = connection.CreateTable<ClientBookDto>();
+                    var b = connection.CreateTable<ClientBookmarkDto>();
+                    var c = connection.CreateTable<GenreDto>();
+                    return true;
+                }
+            }
+            catch (SQLiteException ex)
+            {
+                return false;
+            }
+        }
+
+        public bool AddElements<T>(IEnumerable<T> newItems) where T : IClientEntity
+        {
+            try
+            {
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
+                {
+                    connection.InsertAll(newItems);
                     return true;
                 }
             }
@@ -29,7 +67,7 @@ namespace HbrClient
         {
             try
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, "Hbr.db")))
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
                     connection.Insert(newItem);
                     return true;
@@ -45,7 +83,7 @@ namespace HbrClient
         {
             try
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, "Hbr.db")))
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
                     return connection.Table<T>().ToList();
                 }
@@ -60,7 +98,7 @@ namespace HbrClient
         {
             try
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, "Hbr.db")))
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
                     if (item is ClientBookDto book)
                     {
@@ -91,7 +129,7 @@ namespace HbrClient
         {
             try
             {
-                using (var connection = new SQLiteConnection(System.IO.Path.Combine(folder, "Hbr.db")))
+                using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
                     connection.Delete(entity);
                     return true;

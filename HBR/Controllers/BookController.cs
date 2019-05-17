@@ -47,7 +47,7 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
-        public Task UpdateBookProgress(UpdateBookProgressRequest request)
+        public Task UpdateBookProgress([FromBody]UpdateBookProgressRequest request)
         {
             return _bookService.UpdateProgress(request);
         }
@@ -70,8 +70,8 @@ namespace HBR.Controllers
             return _bookService.GetMyBooks();
         }
 
-        [HttpGet]
-        public Task<List<BookDto>> GetMissingBooks(GetMissingRequest request)
+        [HttpPost]
+        public Task<List<BookDto>> GetMissingBooks([FromBody]GetMissingRequest request)
         {
             return _bookService.GetMissingBooks(request);
         }
@@ -82,6 +82,18 @@ namespace HBR.Controllers
             var stream = await _blobStorageService.GetFileFromStorageAsStream(bookId, "pdf");
             //return stream.GetBuffer();
             return File(stream, "application/pdf");
+        }
+
+        [HttpPost]
+        public Task<List<BookDto>> BulkInsertBooks([FromBody]List<AddNewBookRequest> requestList)
+        {
+            return _bookService.BulkInsert(requestList);
+        }
+
+        [HttpPost]
+        public Task<List<BookDto>> BulkUpdateBooks([FromBody]List<UpdateBookRequest> requestList)
+        {
+            return _bookService.BulkUpdate(requestList);
         }
     }
 }

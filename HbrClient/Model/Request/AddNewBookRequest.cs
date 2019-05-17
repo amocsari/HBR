@@ -13,7 +13,5 @@
         public int? GenreId { get; set; }
 
         public bool AutoCompleteData { get; set; }
-
-        public byte[] File { get; set; }
     }
 }

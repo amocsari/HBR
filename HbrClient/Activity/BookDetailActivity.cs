@@ -2,6 +2,7 @@
 using Acr.UserDialogs;
 using Android.App;
 using Android.Content;
+using Android.Net;
 using Android.OS;
 using Android.Support.V7.Widget;
 using Android.Widget;
@@ -31,11 +32,15 @@ namespace HbrClient
 
         List<GenreDto> GenreList { get; set; }
 
+        Database _database;
+
         protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_book_data_edit);
+
+            _database = Database.Instance;
 
             var extra = Intent.GetStringExtra("book");
 
@@ -255,33 +260,47 @@ namespace HbrClient
 
         private async Task InitializeAsync()
         {
-            using (var client = new HttpClient())
+            if (CheckInternetConnection())
             {
-                var dialog = UserDialogs.Instance.Loading("Loading");
-                try
+                using (var client = new HttpClient())
                 {
-                    var response = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
-
-                    if (response.IsSuccessStatusCode)
+                    var dialog = UserDialogs.Instance.Loading("Loading");
+                    try
                     {
-                        GenreList = await response.Content.ReadAsAsync<List<GenreDto>>();
-                    }
+                        var response = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
 
-                    if (Dto.BookId.HasValue)
-                    {
-                        response = await client.GetAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook?bookId={Dto.BookId}");
                         if (response.IsSuccessStatusCode)
                         {
-                            var bookmarkList = await response.Content.ReadAsAsync<List<BookmarkDto>>();
-                            Dto.Bookmarks = bookmarkList;
+                            GenreList = await response.Content.ReadAsAsync<List<GenreDto>>();
+                        }
+
+                        if (Dto.BookId.HasValue)
+                        {
+                            response = await client.GetAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook?bookId={Dto.BookId}");
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var bookmarkList = await response.Content.ReadAsAsync<List<BookmarkDto>>();
+                                Dto.Bookmarks = bookmarkList;
+                            }
                         }
                     }
+                    catch (Exception e)
+                    {
+                    }
+                    dialog.Dispose();
                 }
-                catch (Exception e)
-                {
-                }
-                dialog.Dispose();
             }
+            else
+            {
+
+            }
+        }
+
+        private bool CheckInternetConnection()
+        {
+            ConnectivityManager cm = (ConnectivityManager)GetSystemService(Context.ConnectivityService);
+            NetworkInfo activeConnection = cm.ActiveNetworkInfo;
+            return (activeConnection != null) && activeConnection.IsConnected;
         }
     }
 }

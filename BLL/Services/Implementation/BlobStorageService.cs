@@ -22,9 +22,12 @@ namespace BLL.Services.Implementation
                     var cloudBlobClient = storageAccount.CreateCloudBlobClient();
                     var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
 
-                    var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync("Arifureta Shokugyou de Sekai Saikyou [WN]_01.pdf");
-                    //var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync($"{bookId}.{extension}");
+                    //var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync("Arifureta Shokugyou de Sekai Saikyou [WN]_01.pdf");
 
+                    var bbReference = cloudBlobContainer.GetBlockBlobReference("Arifureta Shokugyou de Sekai Saikyou [WN]_01.pdf");
+                    bbReference = cloudBlobContainer.GetBlockBlobReference($"{bookId}.{extension}");
+
+                    var reference = await cloudBlobContainer.GetBlobReferenceFromServerAsync($"{bookId}.{extension}");
                     var stream = new MemoryStream();
                     try
                     {

@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Acr.UserDialogs;
+using Amazon.Util.Internal.PlatformServices;
 using Android.App;
 using Android.Content;
+using Android.Net;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
@@ -16,6 +19,7 @@ using Android.Support.V7.Widget;
 using HbrClient.Library;
 using HbrClient.Model.Dto;
 using HbrClient.Model.Request;
+using Plugin.Connectivity;
 
 namespace HbrClient
 {
@@ -26,11 +30,14 @@ namespace HbrClient
         private LibraryAdapter mAdapter = new LibraryAdapter();
         string AuthorQuery;
         string TitleQuery;
+        Database _database;
 
         protected override async void OnCreate(Bundle savedInstanceState)
         {
             UserDialogs.Init(this);
             base.OnCreate(savedInstanceState);
+
+            _database = Database.Instance;
 
             SetContentView(Resource.Layout.activity_main);
 
@@ -42,7 +49,9 @@ namespace HbrClient
             mAdapter.RecyclerView = mRecyclerView;
             mRecyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
-            await GetBooksFromServer();
+            await SynchLocalWithRemoteAsync();
+            var bookList = await GetLocalOrRemoteBookListAsync();
+            mAdapter.AddBooks(bookList);
 
             var AuthorQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_author_query);
             var TitleQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_title_query);
@@ -56,9 +65,24 @@ namespace HbrClient
             fab.Click += FabOnClick;
         }
 
+        private async Task<List<ClientBookDto>> GetLocalOrRemoteBookListAsync()
+        {
+            if (CheckInternetConnection())
+            {
+                return await GetBooksFromServerAsync();
+            }
+            else
+            {
+                return _database.SelectTable<ClientBookDto>();
+            }
+        }
+
         private async void QueryButtonOnClick(object sender, EventArgs e)
         {
-            await GetBooksFromServer();
+            var bookList = await GetBooksFromServerAsync(authorQuery: AuthorQuery, titleQuery: TitleQuery);
+            mAdapter.Library.Clear();
+            mAdapter.AddBooks(bookList);
+
             AuthorQuery = string.Empty;
             TitleQuery = string.Empty;
         }
@@ -108,27 +132,30 @@ namespace HbrClient
             base.OnSaveInstanceState(outState);
         }
 
-        private async Task GetBooksFromServer()
+        private async Task<List<ClientBookDto>> GetBooksFromServerAsync(string authorQuery = "", string titleQuery = "", bool showLoading = true)
         {
+            if (!CheckInternetConnection())
+                return new List<ClientBookDto>();
+
             using (var client = new HttpClient())
             {
-                var dialog = UserDialogs.Instance.Loading("Loading");
+                var dialog = UserDialogs.Instance.Loading(title: "Loading", show: showLoading);
                 try
                 {
-                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/querybooks?Title={TitleQuery}&Author={AuthorQuery}");
+                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/querybooks?Title={titleQuery}&Author={authorQuery}");
 
                     if (response.IsSuccessStatusCode)
                     {
                         var bookList = await response.Content.ReadAsAsync<List<ClientBookDto>>();
-
-                        mAdapter.Library.Clear();
-                        mAdapter.AddBook(bookList);
+                        dialog.Dispose();
+                        return bookList;
                     }
                 }
                 catch (Exception e)
                 {
                 }
                 dialog.Dispose();
+                return new List<ClientBookDto>();
             }
         }
 
@@ -153,35 +180,43 @@ namespace HbrClient
 
                                 if (!book.BookId.HasValue)
                                 {
-                                    using (var client = new HttpClient())
+                                    if (CheckInternetConnection())
                                     {
-                                        var dialog = UserDialogs.Instance.Loading("Loading");
-                                        try
+                                        using (var client = new HttpClient())
                                         {
-                                            var request = new AddNewBookRequest
+                                            var dialog = UserDialogs.Instance.Loading("Loading");
+                                            try
                                             {
-                                                Author = book.Author,
-                                                GenreId = book.GenreId,
-                                                Isbn = book.Isbn,
-                                                PageNumber = book.PageNumber,
-                                                Title = book.Title,
-                                                AutoCompleteData = autoComplete
-                                            };
+                                                var request = new AddNewBookRequest
+                                                {
+                                                    Author = book.Author,
+                                                    GenreId = book.GenreId,
+                                                    Isbn = book.Isbn,
+                                                    PageNumber = book.PageNumber,
+                                                    Title = book.Title,
+                                                    AutoCompleteData = autoComplete
+                                                };
 
-                                            var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addnewbook", request);
+                                                var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addnewbook", request);
 
-                                            if (response.IsSuccessStatusCode)
-                                            {
-                                                var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
+                                                if (response.IsSuccessStatusCode)
+                                                {
+                                                    var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
 
-                                                mAdapter.AddBook(new List<ClientBookDto> { returnedBook });
+                                                    mAdapter.AddBooks(new List<ClientBookDto> { returnedBook });
+                                                }
                                             }
+                                            catch (Exception e)
+                                            {
+                                            }
+                                            dialog.Dispose();
                                         }
-                                        catch (Exception e)
-                                        {
-                                        }
-                                        dialog.Dispose();
                                     }
+                                    {
+                                        mAdapter.AddBooks(new List<ClientBookDto> { book });
+                                    }
+
+                                    _database.AddElement(book);
                                 }
                                 else
                                 {
@@ -240,7 +275,7 @@ namespace HbrClient
                         var request = new AddNewBookRequest
                         {
                             Isbn = "9780316272247",
-                            File = byteArray
+                            //File = byteArray
                         };
                         var a = Encoding.ASCII.GetString(byteArray);
                         var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/UploadBook", request);
@@ -278,6 +313,103 @@ namespace HbrClient
                 Android.Widget.Toast.MakeText(this, "No Application Available to View PDF", Android.Widget.ToastLength.Short).Show();
             }
 
+        }
+
+        private async Task SynchLocalWithRemoteAsync()
+        {
+            if (!CheckInternetConnection())
+                return;
+
+            var dialog = UserDialogs.Instance.Loading("Synchronizing!");
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    var localBookList = _database.SelectTable<ClientBookDto>();
+                    var localBookIdList = localBookList
+                        .Where(lb => lb.BookId.HasValue)
+                        .Select(lb => lb.BookId.Value)
+                        .ToList();
+
+                    var request = new GetMissingRequest
+                    {
+                        UserId = 1, //TODO
+                        IdList = localBookIdList
+                    };
+                    var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var missingBooks = await result.Content.ReadAsAsync<List<ClientBookDto>>();
+                        _database.AddElements(missingBooks);
+                    }
+
+                    var localModifiedBookList = localBookList
+                        .Where(lb => lb.ModifiedOffline);
+
+                    var bulkInsertBookList = localBookList
+                        .Where(lb => !lb.BookId.HasValue)
+                        .ToList();
+
+                    var bulkInsertRequest = bulkInsertBookList
+                        .Select(lb => new AddNewBookRequest
+                        {
+                            Title = lb.Title,
+                            PageNumber = lb.PageNumber,
+                            Isbn = lb.Isbn,
+                            Author = lb.Author,
+                            GenreId = lb.GenreId
+                        }).ToList();
+
+                    var bulkModifyBookList = localModifiedBookList
+                        .Where(lb => lb.BookId.HasValue)
+                        .ToList();
+
+                    var bulkModifyRequest = bulkModifyBookList
+                        .Select(lb => new UpdateBookRequest
+                        {
+                            Author = lb.Author,
+                            BookId = lb.BookId.Value,
+                            GenreId = lb.GenreId,
+                            Isbn = lb.Isbn,
+                            PageNumber = lb.PageNumber,
+                            Title = lb.Title
+                        }).ToList();
+
+                    result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkUpdateBooks", bulkModifyRequest);
+                    if (result.IsSuccessStatusCode)
+                    {
+                        foreach(var modifiedBook in bulkModifyBookList)
+                        {
+                            modifiedBook.ModifiedOffline = false;
+                            _database.UpdateTable(modifiedBook);
+                        }
+                    }
+
+                    result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkInsetBooks", bulkInsertRequest);
+                    if (result.IsSuccessStatusCode)
+                    {
+                        var returnedList = await result.Content.ReadAsAsync<List<ClientBookDto>>();
+                        foreach(var oldBook in bulkInsertBookList)
+                        {
+                            _database.RemoveTable(oldBook);
+                        }
+
+                        _database.AddElements(returnedList);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+            dialog.Dispose();
+        }
+
+        private bool CheckInternetConnection()
+        {
+            ConnectivityManager cm = (ConnectivityManager)GetSystemService(Context.ConnectivityService);
+            NetworkInfo activeConnection = cm.ActiveNetworkInfo;
+            return (activeConnection != null) && activeConnection.IsConnected;
         }
     }
 }

@@ -80,7 +80,7 @@ namespace HbrClient.Library
                         using (var client = new HttpClient())
                         {
                             var book = Library[position];
-                            var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById?bookId={book.BookId}");
+                            var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById/{book.BookId}");
 
                             if (response.IsSuccessStatusCode)
                             {
@@ -150,7 +150,7 @@ namespace HbrClient.Library
             popup.Show();
         }
 
-        public void AddBook(List<ClientBookDto> dto)
+        public void AddBooks(List<ClientBookDto> dto)
         {
             if (Library == null)
                 Library = new List<ClientBookDto>();

@@ -23,5 +23,8 @@ namespace BLL.Services.Interface
 
         Task<BookHeaderDto> FindBookByIsbn(string isbn);
         Task<List<BookDto>> GetMissingBooks(GetMissingRequest request);
+
+        Task<List<BookDto>> BulkInsert(List<AddNewBookRequest> requestList);
+        Task<List<BookDto>> BulkUpdate(List<UpdateBookRequest> requestList);
     }
 }
