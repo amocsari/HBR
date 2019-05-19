@@ -80,10 +80,18 @@ namespace HbrClient.Library
                         var dialog = UserDialogs.Instance.Loading("Loading");
 
                         var book = Library[position];
-                        
+
+                        var request = new DeleteBookByIdRequest
+                        {
+                            BookId = book.BookId,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
+                        };
+
                         using (var client = new HttpClient())
                         {
-                            var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById?bookid={book.BookId}");
+                            var response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Book/DeleteBookById", request);
                         }
 
                         _database.RemoveTable(book);
@@ -119,7 +127,10 @@ namespace HbrClient.Library
                     {
                         var request = new UpdateBookProgressRequest
                         {
-                            BookId = Library[position].BookId
+                            BookId = Library[position].BookId,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
                         };
                         try
                         {

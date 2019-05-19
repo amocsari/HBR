@@ -189,10 +189,22 @@ namespace HbrClient
                         var bookmark = new BookmarkDto
                         {
                             BookId = Dto.BookId,
-                            PageNumber = pageNumber
+                            PageNumber = pageNumber,
+                            BookmarkId = new Guid().ToString(),
+                            LastUpdated = DateTime.Now
                         };
 
-                        var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/AddBookmark", bookmark);
+                        var request = new AddBookmarkRequest
+                        {
+                            BookmarkId = bookmark.BookmarkId,
+                            BookId = bookmark.BookId,
+                            PageNumber = bookmark.PageNumber,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
+                        };
+
+                        var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/AddBookmark", request);
 
                         if (response.IsSuccessStatusCode)
                         {
@@ -276,7 +288,14 @@ namespace HbrClient
 
                         if (!string.IsNullOrEmpty(Dto.BookId))
                         {
-                            response = await client.GetAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook?bookId={Dto.BookId}");
+                            var request = new GetBookmarksForBookRequest
+                            {
+                                BookId = Dto.BookId,
+                                #region tmp ki lesz veve
+                                UserIdentifier = HbrApplication.UserIdentifier,
+                                #endregion
+                            };
+                            response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook", request);
                             if (response.IsSuccessStatusCode)
                             {
                                 var bookmarkList = await response.Content.ReadAsAsync<List<BookmarkDto>>();

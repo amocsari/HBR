@@ -100,7 +100,7 @@ namespace HbrClient
                 //                                        //.WithParentActivityOrWindow(HbrApplication.ParentActivity)
                 //                                        .ExecuteAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
             }
@@ -188,7 +188,10 @@ namespace HbrClient
                     var accounts = await app.GetAccountsAsync();
                     authenticationResult = await app.AcquireTokenSilentAsync(HbrApplication.ApiScopes, GetAccountByPolicy(accounts, HbrApplication.PolicySignUpSignIn));
 
-                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/getmybooks");
+                    //var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/getmybooks");
+                    #region tmp ki lesz veve
+                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/getmybooks?useridentifier{HbrApplication.UserIdentifier}");
+                    #endregion
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -244,7 +247,10 @@ namespace HbrClient
                                                     Isbn = book.Isbn,
                                                     PageNumber = book.PageNumber,
                                                     Title = book.Title,
-                                                    AutoCompleteData = autoComplete
+                                                    AutoCompleteData = autoComplete,
+                                                    #region tmp ki lesz veve
+                                                    UserIdentifier = HbrApplication.UserIdentifier
+                                                    #endregion
                                                 };
 
                                                 var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addnewbook", request);
@@ -285,7 +291,10 @@ namespace HbrClient
                                                     Isbn = book.Isbn,
                                                     PageNumber = book.PageNumber,
                                                     Title = book.Title,
-                                                    AutoCompleteData = autoComplete
+                                                    AutoCompleteData = autoComplete,
+                                                    #region tmp ki lesz veve
+                                                    UserIdentifier = HbrApplication.UserIdentifier
+                                                    #endregion
                                                 };
 
                                                 var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/updatebook", request);
@@ -335,6 +344,9 @@ namespace HbrClient
                         var request = new AddOrEditBookRequest
                         {
                             Isbn = "9780316272247",
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
                         };
                         var a = Encoding.ASCII.GetString(byteArray);
                         var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/UploadBook", request);
@@ -350,7 +362,7 @@ namespace HbrClient
                     break;
             }
 
-            if((int)resultCode == sign_in_response_code)
+            if ((int)resultCode == sign_in_response_code)
                 AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(requestCode, resultCode, data);
         }
 
@@ -394,7 +406,10 @@ namespace HbrClient
 
                     var request = new GetMissingRequest
                     {
-                        IdList = localBookIdList
+                        IdList = localBookIdList,
+                        #region tmp ki lesz veve
+                        UserIdentifier = HbrApplication.UserIdentifier
+                        #endregion
                     };
 
                     var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);
@@ -416,7 +431,11 @@ namespace HbrClient
                             PageNumber = lb.PageNumber,
                             Isbn = lb.Isbn,
                             Author = lb.Author,
-                            GenreId = lb.GenreId
+                            GenreId = lb.GenreId,
+                            AutoCompleteData = false,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
                         }).ToList();
 
                     result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkUpdateBooks", bulkUpdateBookRequest);

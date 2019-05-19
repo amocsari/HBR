@@ -33,8 +33,8 @@ namespace HBR.Controllers
             return _bookService.FindBookByIsbn(isbn);
         }
 
-        [HttpDelete]
-        public Task DeleteBookById(DeleteBookByIdRequest request)
+        [HttpPost]
+        public Task DeleteBookById([FromBody]DeleteBookByIdRequest request)
         {
             //return _bookService.DeleteBookById(request, UserId);
             #region tmp ki lesz veve

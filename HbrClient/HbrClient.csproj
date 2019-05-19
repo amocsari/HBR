@@ -90,11 +90,17 @@
     <Compile Include="Model\Dto\ClientGenreDto.cs" />
     <Compile Include="Model\Dto\GenreDto.cs" />
     <Compile Include="Model\Dto\IClientEntity.cs" />
-    <Compile Include="Model\Request\AddBookToShelfRequest.cs" />
-    <Compile Include="Model\Request\AddNewBookRequest.cs" />
+    <Compile Include="Model\Request\Bookmark\AddBookmarkRequest.cs" />
+    <Compile Include="Model\Request\Bookmark\DeleteBookmarkRequest.cs" />
+    <Compile Include="Model\Request\Bookmark\GetBookmarksForBookRequest.cs" />
+    <Compile Include="Model\Request\Book\AddBookToShelfRequest.cs" />
+    <Compile Include="Model\Request\Book\AddOrEditBookRequest.cs" />
+    <Compile Include="Model\Request\Book\DeleteBookByIdRequest.cs" />
+    <Compile Include="Model\Request\Book\QueryBooksRequest.cs" />
+    <Compile Include="Model\Request\Book\UpdateBookProgressRequest.cs" />
     <Compile Include="Model\Request\GetMissingRequest.cs" />
-    <Compile Include="Model\Request\QueryBooksRequest.cs" />
-    <Compile Include="Model\Request\UpdateBookProgressRequest.cs" />
+    <Compile Include="Model\Request\LoginRequest.cs" />
+    <Compile Include="Model\Request\RequestBase.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

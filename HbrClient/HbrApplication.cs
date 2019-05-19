@@ -10,7 +10,7 @@ namespace HbrClient
     public class HbrApplication : Application
     {
         #region tmp ki lesz véve
-        public static string UserId { get; set; }
+        public static string UserIdentifier { get; set; }
         #endregion
 
 

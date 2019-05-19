@@ -7,6 +7,7 @@ using HbrClient.Model.Dto;
 using Acr.UserDialogs;
 using System.Net.Http;
 using Android.Support.V7.Widget;
+using HbrClient.Model.Request;
 
 namespace HbrClient.Bookmark
 {
@@ -66,7 +67,14 @@ namespace HbrClient.Bookmark
                 using (var client = new HttpClient())
                 {
                     var bookmark = Bookmarks[position];
-                    var response = await client.DeleteAsync($"https://hbr.azurewebsites.net/api/Bookmark/DeleteBookMark?bookmarkId={bookmark.BookmarkId}");
+                    var request = new DeleteBookmarkRequest
+                    {
+                        BookmarkId = bookmark.BookmarkId,
+                        #region tmp ki lesz veve
+                        UserIdentifier = HbrApplication.UserIdentifier
+                        #endregion
+                    };
+                    var response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Bookmark/DeleteBookMark", request);
 
                     if (response.IsSuccessStatusCode)
                     {
