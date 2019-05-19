@@ -2,7 +2,7 @@
 using Android.OS;
 using Android.Support.V7.App;
 
-namespace HbrClient.Activity
+namespace HbrClient
 {
     [Activity(Label = "BookQueryActivity")]
     public class BookQueryActivity : AppCompatActivity
