@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using DAL.Entity;
+﻿using DAL.Entity;
 using DAL.Seeds;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +6,7 @@ namespace DAL
 {
     public class HbrDbContext : DbContext, IHbrDbContext
     {
-        public HbrDbContext(DbContextOptions<HbrDbContext> options): base(options)
+        public HbrDbContext(DbContextOptions<HbrDbContext> options) : base(options)
         {
 
         }
@@ -22,6 +21,9 @@ namespace DAL
                 .HasQueryFilter(book => book.Deleted == false);
             modelBuilder.Entity<Bookmark>()
                 .HasQueryFilter(book => book.Deleted == false);
+
+            modelBuilder.Entity<UserBook>()
+                .HasKey(c => new { c.BookId, c.UserIdentifier });
 
             modelBuilder
                 .SeedGenres()

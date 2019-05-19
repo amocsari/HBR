@@ -17,8 +17,7 @@ namespace DAL.Entity
         public int BookId { get; set; }
 
         [Required]
-        //TODO foreign key user-re
-        public int UserId { get; set; }
+        public string UserIdentifier { get; set; }
 
         [Required]
         public int PageNumber { get; set; }

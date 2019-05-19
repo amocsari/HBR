@@ -10,15 +10,17 @@ using Microsoft.Azure.Storage.Blob;
 
 namespace WebApplication1.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
     {
         // GET api/values
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet]        
+        public async Task<object> Get()
         {
+            return new { Value1 = "ValueA", Value2 = "ValueB" };
+
             string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=hbrstorage;AccountKey=qrUsM0vJ6+GXCDpqFc1+6sGP9up6hNy3admWGKDnsdUtjJyrxHUBOMluczT/DhqElOQh4Rm1KOYuZUIkEf3L2Q==;EndpointSuffix=core.windows.net";
 
             if (CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))

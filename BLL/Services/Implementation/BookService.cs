@@ -27,20 +27,21 @@ namespace BLL.Services.Implementation
             _timeService = timeService;
         }
 
-        public async Task AddBookToShelf(AddBookToShelfRequest request)
+        public async Task AddBookToShelf(AddBookToShelfRequest request, string userIdentifier)
         {
             var entity = _mapper.Map<UserBook>(request);
+            entity.UserIdentifier = userIdentifier;
 
-            var alreadyAdded = await _context.UserBooks.AsNoTracking().AnyAsync(ub => ub.BookId == request.BookId && ub.UserId == request.UserId);
+            var alreadyAdded = await _context.UserBooks.AsNoTracking().AnyAsync(ub => ub.BookId == request.BookId && ub.UserIdentifier == userIdentifier);
 
             if (alreadyAdded)
-                throw new HbrException("Ez a könyv már hozzá van adva ennek a felhasználónak a polcához!");
+                throw new HbrException("Ez a könyv már hozzá van adva ennek a polcához!");
 
             await _context.UserBooks.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<BookDto> AddNewBook(AddNewBookRequest request)
+        public async Task<BookDto> AddNewBook(AddNewBookRequest request, string userIdentifier)
         {
             var entity = _mapper.Map<Book>(request);
 
@@ -66,6 +67,7 @@ namespace BLL.Services.Implementation
             entity.GenreId = request.GenreId;
             entity.LastUpdated = _timeService.UtcNow;
             entity.Extension = "pdf";
+            entity.UploaderIdentifier = userIdentifier;
 
             await _context.Books.AddAsync(entity);
             await _context.SaveChangesAsync();
@@ -79,7 +81,7 @@ namespace BLL.Services.Implementation
             return _mapper.Map<BookDto>(newEntity);
         }
 
-        public async Task<List<BookDto>> BulkInsert(List<AddNewBookRequest> requestList)
+        public async Task<List<BookDto>> BulkInsert(List<AddNewBookRequest> requestList, string userIdentifier)
         {
             var entityList = _mapper.Map<List<Book>>(requestList);
             foreach (var entity in entityList)
@@ -101,7 +103,7 @@ namespace BLL.Services.Implementation
             return newDtoList;
         }
 
-        public async Task<List<BookDto>> BulkUpdate(List<UpdateBookRequest> requestList)
+        public async Task<List<BookDto>> BulkUpdate(List<UpdateBookRequest> requestList, string userIdentifier)
         {
             var entityList = await _context.Books
                 .Where(b => requestList.Any(r => r.BookId == b.BookId))
@@ -127,7 +129,7 @@ namespace BLL.Services.Implementation
             return newDtoList;
         }
 
-        public async Task DeleteBookById(int bookId)
+        public async Task DeleteBookById(int bookId, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
             var entity = await _context.Books.IgnoreQueryFilters().FirstOrDefaultAsync(book => book.BookId == bookId)
@@ -139,16 +141,18 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task<BookHeaderDto> FindBookByIsbn(string isbn)
+        public async Task<BookHeaderDto> FindBookByIsbn(string isbn, string userIdentifier)
         {
             return await _goodReadsService.FindBookByIsbn(isbn);
         }
 
-        public async Task<List<BookDto>> GetMissingBooks(GetMissingRequest request)
+        public async Task<List<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier)
         {
             //TODO user query
-            var missingBooks = await _context.Books
+            var missingBooks = await _context.UserBooks
                 .AsNoTracking()
+                .Where(ub => ub.UserIdentifier == userIdentifier)
+                .Select(ub => ub.Book)
                 .Include(b => b.Genre)
                 .Include(b => b.Bookmarks)
                 .Where(b => !request.IdList.Contains(b.BookId))
@@ -157,14 +161,16 @@ namespace BLL.Services.Implementation
             return _mapper.Map<List<BookDto>>(missingBooks);
         }
 
-        public async Task<List<BookDto>> GetMyBooks()
+        public async Task<List<BookDto>> GetBooksByUser(string userIdentifier)
         {
-            //TODO user query (usergroups)
-            var bookList = await _context.Books
-                .Include(b => b.Genre)
+            var bookList = await _context.UserBooks
+                .Where(ub => ub.UserIdentifier == userIdentifier)
+                .Select(ub => ub.Book)
                 .Include(b => b.Bookmarks)
+                .Include(b => b.Genre)
                 .AsNoTracking()
                 .ToListAsync();
+
             return _mapper.Map<List<BookDto>>(bookList);
         }
 
@@ -193,7 +199,7 @@ namespace BLL.Services.Implementation
             return _mapper.Map<List<BookDto>>(bookList);
         }
 
-        public async Task<BookDto> UpdateBook(UpdateBookRequest request)
+        public async Task<BookDto> UpdateBook(UpdateBookRequest request, string userIdentifier)
         {
 
             var entity = await _context.Books
@@ -201,6 +207,9 @@ namespace BLL.Services.Implementation
                 .Include(b => b.Bookmarks)
                 .FirstOrDefaultAsync(b => b.BookId == request.BookId)
                 ?? throw new HbrException("Ismeretlen könyvazonosító!");
+
+            if (entity.UploaderIdentifier != userIdentifier)
+                throw new HbrException("Nem saját feltöltött könyvek nem szerkesztetőek!");
 
             if (request.AutoCompleteData && !string.IsNullOrEmpty(request.Isbn))
             {
@@ -231,13 +240,18 @@ namespace BLL.Services.Implementation
             return newDto;
         }
 
-        public async Task UpdateProgress(UpdateBookProgressRequest request)
+        public async Task UpdateProgress(UpdateBookProgressRequest request, string userIdentifier)
         {
-            throw new NotImplementedException();
-            //TODO set user query
-            var userBook = await _context.UserBooks.FirstOrDefaultAsync(ub => ub.BookId == request.BookId);
+            var userBook = await _context.UserBooks.FirstOrDefaultAsync(ub => ub.BookId == request.BookId && ub.UserIdentifier == userIdentifier);
             userBook.Progress = request.NewProgress;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<BookDto>> GetBooksByUploader(string userIdentifier)
+        {
+            var entities = await _context.Books.AsNoTracking().Where(b => b.UploaderIdentifier == userIdentifier).ToListAsync();
+
+            return _mapper.Map<List<BookDto>>(entities);
         }
     }
 }

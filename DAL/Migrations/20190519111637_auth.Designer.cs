@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(HbrDbContext))]
-    partial class HbrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190519111637_auth")]
+    partial class auth
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +62,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(5423),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 631, DateTimeKind.Local).AddTicks(4559),
                             PageNumber = 248,
                             Title = "The Fellowship of the Ring",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -72,7 +74,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8118),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 631, DateTimeKind.Local).AddTicks(7273),
                             PageNumber = 249,
                             Title = "The Two Towers",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -84,7 +86,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8157),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 631, DateTimeKind.Local).AddTicks(7313),
                             PageNumber = 250,
                             Title = "The Return of the King",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -96,7 +98,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = 2,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8174),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 631, DateTimeKind.Local).AddTicks(7329),
                             PageNumber = 195,
                             Title = "Rogue One: A Star Wars Story",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -117,8 +119,7 @@ namespace DAL.Migrations
 
                     b.Property<int>("PageNumber");
 
-                    b.Property<string>("UserIdentifier")
-                        .IsRequired();
+                    b.Property<int>("UserId");
 
                     b.HasKey("BookmarkId");
 
@@ -132,27 +133,27 @@ namespace DAL.Migrations
                             BookmarkId = 1,
                             BookId = 1,
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(1329),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 632, DateTimeKind.Local).AddTicks(557),
                             PageNumber = 25,
-                            UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
+                            UserId = 1
                         },
                         new
                         {
                             BookmarkId = 2,
                             BookId = 2,
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(2844),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 632, DateTimeKind.Local).AddTicks(2057),
                             PageNumber = 37,
-                            UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
+                            UserId = 1
                         },
                         new
                         {
                             BookmarkId = 3,
                             BookId = 3,
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(2876),
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 632, DateTimeKind.Local).AddTicks(2088),
                             PageNumber = 48,
-                            UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
+                            UserId = 1
                         });
                 });
 
@@ -179,14 +180,14 @@ namespace DAL.Migrations
                             GenreId = 1,
                             Deleted = false,
                             GenreName = "Fantasy",
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 445, DateTimeKind.Local).AddTicks(5583)
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 629, DateTimeKind.Local).AddTicks(5069)
                         },
                         new
                         {
                             GenreId = 2,
                             Deleted = false,
                             GenreName = "Sci-Fi",
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(98)
+                            LastUpdated = new DateTime(2019, 5, 19, 13, 16, 37, 630, DateTimeKind.Local).AddTicks(9288)
                         });
                 });
 

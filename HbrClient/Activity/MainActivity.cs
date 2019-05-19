@@ -343,7 +343,6 @@ namespace HbrClient
 
                     var request = new GetMissingRequest
                     {
-                        UserId = 1, //TODO
                         IdList = localBookIdList
                     };
                     var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);

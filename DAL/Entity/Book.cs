@@ -33,6 +33,9 @@ namespace DAL.Entity
         [Required]
         public DateTime LastUpdated { get; set; } = DateTime.Now;
 
+        [Required]
+        public string UploaderIdentifier { get; set; }
+
         public virtual Genre Genre { get; set; }
         public virtual ICollection<Bookmark> Bookmarks { get; set; }
     }

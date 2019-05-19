@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -9,9 +10,8 @@ using System.Threading.Tasks;
 
 namespace HBR.Controllers
 {
-    [Route("api/[controller]/[Action]")]
-    [Produces("application/json")]
-    public class BookController : ControllerBase
+    [Authorize]
+    public class BookController : BaseController
     {
         private readonly IBookService _bookService;
         private readonly IBlobStorageService _blobStorageService;
@@ -31,71 +31,68 @@ namespace HBR.Controllers
         [HttpGet]
         public Task<BookHeaderDto> FindBookByIsbn(string isbn)
         {
-            return _bookService.FindBookByIsbn(isbn);
+            return _bookService.FindBookByIsbn(isbn, UserId);
         }
 
         [HttpDelete]
         public Task DeleteBookById(int bookId)
         {
-            return _bookService.DeleteBookById(bookId);
+            return _bookService.DeleteBookById(bookId, UserId);
         }
 
         [HttpPost]
         public Task AddBookToShelf([FromBody]AddBookToShelfRequest request)
         {
-            return _bookService.AddBookToShelf(request);
+            return _bookService.AddBookToShelf(request, UserId);
         }
 
         [HttpPost]
         public Task UpdateBookProgress([FromBody]UpdateBookProgressRequest request)
         {
-            return _bookService.UpdateProgress(request);
+            return _bookService.UpdateProgress(request, UserId);
         }
 
         [HttpPost]
         public Task<BookDto> AddNewBook([FromBody]AddNewBookRequest request)
         {
-            return _bookService.AddNewBook(request);
+            return _bookService.AddNewBook(request, UserId);
         }
 
         [HttpPost]
         public Task<BookDto> UpdateBook([FromBody]UpdateBookRequest request)
         {
-            return _bookService.UpdateBook(request);
+            return _bookService.UpdateBook(request, UserId);
         }
 
         [HttpGet]
         public Task<List<BookDto>> GetMyBooks()
         {
-            return _bookService.GetMyBooks();
+            return _bookService.GetBooksByUser(UserId);
         }
 
         [HttpPost]
         public Task<List<BookDto>> GetMissingBooks([FromBody]GetMissingRequest request)
         {
-            return _bookService.GetMissingBooks(request);
+            return _bookService.GetMissingBooks(request, UserId);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetBookById(int bookId)
         {
             var stream = await _blobStorageService.GetFileFromStorageAsStream(bookId, "pdf");
-            //return stream.GetBuffer();
             return File(stream, "application/pdf");
         }
 
         [HttpPost]
         public async Task UploadBook(IFormFile formFile, int bookId)
         {
-            byte[] bFile = null;
-
             if (formFile != null)
             {
                 using (var memoryStream = new MemoryStream())
                 {
                     await formFile.CopyToAsync(memoryStream);
 
-                    _blobStorageService.UploadBook(memoryStream, bookId);
+                    await _blobStorageService.UploadBook(memoryStream, bookId);
                 }
             }
         }
@@ -103,13 +100,13 @@ namespace HBR.Controllers
         [HttpPost]
         public Task<List<BookDto>> BulkInsertBooks([FromBody]List<AddNewBookRequest> requestList)
         {
-            return _bookService.BulkInsert(requestList);
+            return _bookService.BulkInsert(requestList, UserId);
         }
 
         [HttpPost]
         public Task<List<BookDto>> BulkUpdateBooks([FromBody]List<UpdateBookRequest> requestList)
         {
-            return _bookService.BulkUpdate(requestList);
+            return _bookService.BulkUpdate(requestList, UserId);
         }
     }
 }

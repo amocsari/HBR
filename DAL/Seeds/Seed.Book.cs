@@ -15,7 +15,8 @@ namespace DAL.Seeds
                     Author = "J. R. R. Tolkien",
                     PageNumber = 248,
                     GenreId = 1,
-                    Extension = "pdf"
+                    Extension = "pdf",
+                    UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                 });
 
             modelBuilder.Entity<Book>()
@@ -26,7 +27,8 @@ namespace DAL.Seeds
                     Author = "J. R. R. Tolkien",
                     PageNumber = 249,
                     GenreId = 1,
-                    Extension = "pdf"
+                    Extension = "pdf",
+                    UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                 });
 
             modelBuilder.Entity<Book>()
@@ -37,7 +39,8 @@ namespace DAL.Seeds
                     Author = "J. R. R. Tolkien",
                     PageNumber = 250,
                     GenreId = 1,
-                    Extension = "pdf"
+                    Extension = "pdf",
+                    UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                 });
 
             modelBuilder.Entity<Book>()
@@ -48,7 +51,8 @@ namespace DAL.Seeds
                     Author = "Alexander Freed",
                     PageNumber = 195,
                     GenreId = 2,
-                    Extension = "pdf"
+                    Extension = "pdf",
+                    UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                 });
 
             return modelBuilder;

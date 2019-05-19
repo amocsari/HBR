@@ -3,6 +3,8 @@ using BLL.Services.Implementation;
 using BLL.Services.Interface;
 using DAL;
 using HBR.Filters;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureADB2C.UI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +31,15 @@ namespace HBR
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(AzureADB2CDefaults.BearerAuthenticationScheme)
+                .AddAzureADB2CBearer(options => Configuration.Bind("AzureAdB2C", options));
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
             services.AddScoped<IHbrDbContext, HbrDbContext>();
             services.AddMvc(c => c.Filters.Add(typeof(ExceptionFilter))).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddDbContext<HbrDbContext>(options => options.UseSqlServer(azureConnectionString));
+
+            services.AddDbContext<HbrDbContext>(options => options.UseSqlServer(localConnectionString));
+
             services.AddSingleton(service => Mappings.Configure());
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<IBookmarkService, BookmarkService>();
@@ -53,18 +61,20 @@ namespace HBR
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                // Enable middleware to serve generated Swagger as a JSON endpoint.
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+                // specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "HBR");
+                });
             }
 
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HBR");
-            });
-
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseMvc();
         }
     }

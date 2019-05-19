@@ -12,7 +12,7 @@ namespace DAL.Seeds
                 {
                     BookmarkId = 1,
                     BookId = 1,
-                    UserId = 1,
+                    UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                     PageNumber = 25
                 });
 
@@ -21,7 +21,7 @@ namespace DAL.Seeds
                 {
                     BookmarkId = 2,
                     BookId = 2,
-                    UserId = 1,
+                    UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                     PageNumber = 37
                 });
 
@@ -30,7 +30,7 @@ namespace DAL.Seeds
                 {
                     BookmarkId = 3,
                     BookId = 3,
-                    UserId = 1,
+                    UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                     PageNumber = 48
                 });
 
