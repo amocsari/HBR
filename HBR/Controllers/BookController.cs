@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Common.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ namespace HBR.Controllers
         #endregion
 
         [HttpPost]
-        public Task<List<BookDto>> GetMissingBooks([FromBody]GetMissingRequest request)
+        public Task<GetMissingResponse<BookDto>> GetMissingBooks([FromBody]GetMissingRequest request)
         {
             //return _bookService.GetMissingBooks(request, UserId);
             #region tmp ki lesz veve

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
 
 namespace HbrClient.Model.Dto
@@ -19,8 +20,9 @@ namespace HbrClient.Model.Dto
 
         public DateTime LastUpdated { get; set; }
 
-        //public virtual Genre Genre { get; set; }
+        [Ignore]
         public List<BookmarkDto> Bookmarks { get; set; }
+        [Ignore]
         public GenreDto Genre { get; set; }
     }
 }

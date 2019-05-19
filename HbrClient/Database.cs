@@ -35,8 +35,8 @@ namespace HbrClient
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    var a = connection.CreateTable<ClientBookDto>();
-                    var b = connection.CreateTable<ClientBookmarkDto>();
+                    var a = connection.CreateTable<BookDto>();
+                    var b = connection.CreateTable<BookmarkDto>();
                     var c = connection.CreateTable<GenreDto>();
                     return true;
                 }
@@ -109,23 +109,23 @@ namespace HbrClient
             }
         }
 
-        public bool UpdateTable<T>(T item) where T : IClientEntity, new()
+        public bool UpdateTable<T>(T item) where T : new()
         {
             try
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    if (item is ClientBookDto book)
+                    if (item is BookDto book)
                     {
-                        connection.Query<T>("UPDATE ClientBookDto set Isbn=?, Title=?, Author=?, PageNumber=?, GenreId=?, MofidiedOffline=? Where BookId=?", book.Isbn, book.Title, book.Author, book.PageNumber, book.GenreId, book.ModifiedOffline, book.BookId);
+                        connection.Query<T>("UPDATE BookDto set Isbn=?, Title=?, Author=?, PageNumber=?, GenreId=?, LastUpdated=? Where BookId=?", book.Isbn, book.Title, book.Author, book.PageNumber, book.GenreId, book.LastUpdated, book.BookId);
                     }
-                    else if (item is ClientBookmarkDto bookmark)
+                    else if (item is BookmarkDto bookmark)
                     {
-                        connection.Query<T>("UPDATE ClientBookmarkDto set BookId=?, PageNumber=? Where BookmarkId=?", bookmark.BookId, bookmark.PageNumber, bookmark.BookmarkId);
+                        connection.Query<T>("UPDATE BookmarkDto set BookId=?, PageNumber=?, UserIdentifier=?, LastUpdated=? Where BookmarkId=?", bookmark.BookId, bookmark.PageNumber, bookmark.UserIdentifier, bookmark.LastUpdated, bookmark.BookmarkId);
                     }
-                    else if (item is ClientGenreDto genre)
+                    else if (item is GenreDto genre)
                     {
-                        connection.Query<T>("UPDATE ClientGenreDto set GenreName=? Where GenreId=?", genre.GenreName, genre.GenreId);
+                        connection.Query<T>("UPDATE GenreDto set GenreName=? Where GenreId=?", genre.GenreName, genre.GenreId);
                     }
                     else
                     {

@@ -1,5 +1,6 @@
 ﻿using Common.Dto;
 using Common.Request;
+using Common.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace BLL.Services.Interface
         Task<List<BookDto>> GetBooksByUploader(string userIdentifier);
 
         Task<BookHeaderDto> FindBookByIsbn(string isbn);
-        Task<List<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier);
+        Task<GetMissingResponse<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier);
 
         Task<List<BookDto>> BulkUpdate(List<AddOrEditBookRequest> requestList, string userIdentifier);
     }

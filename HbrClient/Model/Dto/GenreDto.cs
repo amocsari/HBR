@@ -7,7 +7,5 @@ namespace HbrClient.Model.Dto
         public string GenreId { get; set; }
         
         public string GenreName { get; set; }
-
-        public DateTime LastUpdated { get; set; }
     }
 }

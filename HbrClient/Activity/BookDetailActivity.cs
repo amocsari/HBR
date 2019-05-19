@@ -24,7 +24,7 @@ namespace HbrClient
     {
         public const int RequestCode = 1;
 
-        ClientBookDto Dto { get; set; }
+        BookDto Dto { get; set; }
         BookmarkAdapter BookmarkAdapter { get; set; }
         TextView AuthorTextView { get; set; }
         TextView TitleTextView { get; set; }
@@ -46,13 +46,13 @@ namespace HbrClient
 
             if (!string.IsNullOrEmpty(extra))
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
                 StringReader sr = new StringReader(extra);
-                Dto = (ClientBookDto)xmlSerializer.Deserialize(sr);
+                Dto = (BookDto)xmlSerializer.Deserialize(sr);
             }
             else
             {
-                Dto = new ClientBookDto();
+                Dto = new BookDto();
             }
 
             AuthorTextView = FindViewById<TextView>(Resource.Id.text_view_book_author);
@@ -185,7 +185,6 @@ namespace HbrClient
 
                     using (var client = new HttpClient())
                     {
-                        //TODO: külön request osztály
                         var bookmark = new BookmarkDto
                         {
                             BookId = Dto.BookId,
@@ -209,6 +208,10 @@ namespace HbrClient
                         if (response.IsSuccessStatusCode)
                         {
                             BookmarkAdapter.AddBookmark(new List<BookmarkDto> { bookmark });
+                        }
+                        else
+                        {
+
                         }
                     }
                     dialog.Dispose();
@@ -262,7 +265,7 @@ namespace HbrClient
 
             SetResult(Result.Ok, returnIntent);
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
             StringWriter sw = new StringWriter();
             xmlSerializer.Serialize(sw, Dto);
             returnIntent.PutExtra("book", sw.ToString());

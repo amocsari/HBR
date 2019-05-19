@@ -2,6 +2,7 @@
 using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Common.Response;
 using DAL;
 using DAL.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -64,13 +65,28 @@ namespace BLL.Services.Implementation
             return bookmarkList;
         }
 
-        public async Task<List<BookmarkDto>> GetMissingBookmarks(GetMissingRequest request, string userIdentifier)
+        public async Task<GetMissingResponse<BookmarkDto>> GetMissingBookmarks(GetMissingRequest request, string userIdentifier)
         {
             var missingBookmarks = await _context.Bookmark
                 .Where(bm => bm.UserIdentifier == userIdentifier)
                 .Where(bm => !request.IdList.Contains(bm.BookmarkId)).ToListAsync();
 
-            return _mapper.Map<List<BookmarkDto>>(missingBookmarks);
+            var remoteDtoList = _mapper.Map<List<BookmarkDto>>(missingBookmarks);
+            var synchedIdList = await _context.Bookmark
+                .AsNoTracking()
+                .Where(bm => bm.UserIdentifier == userIdentifier)
+                .Where(bm => request.IdList.Contains(bm.BookmarkId))
+                .Select(bm => bm.BookmarkId)
+                .ToListAsync();
+
+            var missingIdList = request.IdList.Where(id => !synchedIdList.Contains(id)).ToList();
+            var response = new GetMissingResponse<BookmarkDto>
+            {
+                MissingIdList = missingIdList,
+                RemoteDtoList = remoteDtoList
+            };
+
+            return response;
         }
 
         private async Task CheckIfBookExists(string bookId)

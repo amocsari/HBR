@@ -1,6 +1,7 @@
 ﻿using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Common.Response;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,7 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
-        public Task GetMissingBookmarks([FromBody]GetMissingRequest request)
+        public Task<GetMissingResponse<BookmarkDto>> GetMissingBookmarks([FromBody]GetMissingRequest request)
         {
             //return _bookmarkService.GetMissingBookmarks(request, UserId);
             #region tmp ki lesz veve

@@ -20,6 +20,7 @@ using Android.Views;
 using HbrClient.Library;
 using HbrClient.Model.Dto;
 using HbrClient.Model.Request;
+using HbrClient.Model.Response;
 using Microsoft.Identity.Client;
 
 namespace HbrClient
@@ -106,7 +107,7 @@ namespace HbrClient
             }
         }
 
-        private async Task<List<ClientBookDto>> GetLocalOrRemoteBookListAsync()
+        private async Task<List<BookDto>> GetLocalOrRemoteBookListAsync()
         {
             if (CheckInternetConnection())
             {
@@ -114,7 +115,7 @@ namespace HbrClient
             }
             else
             {
-                return _database.SelectTable<ClientBookDto>();
+                return _database.SelectTable<BookDto>();
             }
         }
 
@@ -173,10 +174,10 @@ namespace HbrClient
             base.OnSaveInstanceState(outState);
         }
 
-        private async Task<List<ClientBookDto>> GetBooksFromServerAsync(string authorQuery = "", string titleQuery = "", bool showLoading = true)
+        private async Task<List<BookDto>> GetBooksFromServerAsync(string authorQuery = "", string titleQuery = "", bool showLoading = true)
         {
             if (!CheckInternetConnection())
-                return new List<ClientBookDto>();
+                return new List<BookDto>();
 
             using (var client = new HttpClient())
             {
@@ -195,7 +196,7 @@ namespace HbrClient
 
                     if (response.IsSuccessStatusCode)
                     {
-                        var bookList = await response.Content.ReadAsAsync<List<ClientBookDto>>();
+                        var bookList = await response.Content.ReadAsAsync<List<BookDto>>();
                         dialog.Dispose();
                         return bookList;
                     }
@@ -208,7 +209,7 @@ namespace HbrClient
                 {
                 }
                 dialog.Dispose();
-                return new List<ClientBookDto>();
+                return new List<BookDto>();
             }
         }
 
@@ -225,11 +226,11 @@ namespace HbrClient
 
                         if (!string.IsNullOrEmpty(bookXml))
                         {
-                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
+                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
                             StringReader sr = new StringReader(bookXml);
                             try
                             {
-                                var book = (ClientBookDto)xmlSerializer.Deserialize(sr);
+                                var book = (BookDto)xmlSerializer.Deserialize(sr);
 
                                 if (string.IsNullOrEmpty(book.BookId))
                                 {
@@ -257,9 +258,9 @@ namespace HbrClient
 
                                                 if (response.IsSuccessStatusCode)
                                                 {
-                                                    var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
+                                                    var returnedBook = await response.Content.ReadAsAsync<BookDto>();
 
-                                                    mAdapter.AddBooks(new List<ClientBookDto> { returnedBook });
+                                                    mAdapter.AddBooks(new List<BookDto> { returnedBook });
                                                 }
                                             }
                                             catch (Exception e)
@@ -269,8 +270,7 @@ namespace HbrClient
                                     }
                                     else
                                     {
-                                        mAdapter.AddBooks(new List<ClientBookDto> { book });
-                                        book.ModifiedOffline = true;
+                                        mAdapter.AddBooks(new List<BookDto> { book });
                                     }
 
                                     _database.AddElement(book);
@@ -301,7 +301,7 @@ namespace HbrClient
 
                                                 if (response.IsSuccessStatusCode)
                                                 {
-                                                    var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
+                                                    var returnedBook = await response.Content.ReadAsAsync<BookDto>();
 
                                                     mAdapter.UpdateBook(returnedBook);
                                                 }
@@ -314,8 +314,7 @@ namespace HbrClient
                                     }
                                     else
                                     {
-                                        mAdapter.AddBooks(new List<ClientBookDto> { book });
-                                        book.ModifiedOffline = true;
+                                        mAdapter.AddBooks(new List<BookDto> { book });
                                     }
 
                                     _database.AddElement(book);
@@ -399,7 +398,7 @@ namespace HbrClient
             {
                 using (var client = new HttpClient())
                 {
-                    var localBookList = _database.SelectTable<ClientBookDto>();
+                    var localBookList = _database.SelectTable<BookDto>();
                     var localBookIdList = localBookList
                         .Select(lb => lb.BookId)
                         .ToList();
@@ -415,13 +414,11 @@ namespace HbrClient
                     var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);
                     if (result.IsSuccessStatusCode)
                     {
-                        var missingBooks = await result.Content.ReadAsAsync<List<ClientBookDto>>();
+                        var missingBooks = await result.Content.ReadAsAsync<List<BookDto>>();
                         _database.AddElements(missingBooks);
                     }
 
-                    var localModifiedBookList = localBookList
-                        .Where(lb => lb.ModifiedOffline)
-                        .ToList();
+                    var localModifiedBookList = localBookList.ToList();
 
                     var bulkUpdateBookRequest = localModifiedBookList
                         .Select(lb => new AddOrEditBookRequest
@@ -441,23 +438,6 @@ namespace HbrClient
                     result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkUpdateBooks", bulkUpdateBookRequest);
                     if (result.IsSuccessStatusCode)
                     {
-                        foreach (var modifiedBook in localModifiedBookList)
-                        {
-                            modifiedBook.ModifiedOffline = false;
-                            _database.UpdateTable(modifiedBook);
-                        }
-                    }
-
-                    result = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var genreList = await result.Content.ReadAsAsync<List<GenreDto>>();
-
-                        var localGenreList = _database.GetGenres();
-
-                        var newGenres = genreList.Where(g => !localGenreList.Any(lg => lg.GenreId == g.GenreId)).ToList();
-
-                        _database.AddElements(newGenres);
                     }
                 }
             }
@@ -484,6 +464,53 @@ namespace HbrClient
             }
 
             return null;
+        }
+
+        private async Task SyncBooksWithServer()
+        {
+
+        }
+
+        private async Task SyncBookmarksWithServer()
+        {
+            using (var client = new HttpClient())
+            {
+                var localBookmarkList = _database.SelectTable<BookmarkDto>();
+                var localBookmarkIdList = localBookmarkList.Select(lbm => lbm.BookmarkId).ToList();
+
+                var request = new GetMissingRequest
+                {
+                    IdList = localBookmarkIdList,
+                    #region tmp ki lesz veve
+                    UserIdentifier = HbrApplication.UserIdentifier
+                    #endregion
+                };
+
+                var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/GetMissingBookmarks", request);
+                if (result.IsSuccessStatusCode)
+                {
+                    var response = await result.Content.ReadAsAsync<GetMissingResponse<BookmarkDto>>();
+                    _database.AddElements(response.RemoteDtoList);
+                }
+            }
+        }
+
+        private async Task SyncGenresWithServer()
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
+                if (result.IsSuccessStatusCode)
+                {
+                    var genreList = await result.Content.ReadAsAsync<List<GenreDto>>();
+
+                    var localGenreList = _database.GetGenres();
+
+                    var newGenres = genreList.Where(g => !localGenreList.Any(lg => lg.GenreId == g.GenreId)).ToList();
+
+                    _database.AddElements(newGenres);
+                }
+            }
         }
     }
 }

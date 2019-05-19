@@ -85,11 +85,7 @@
     <Compile Include="Model\Dto\BookDto.cs" />
     <Compile Include="Model\Dto\BookHeaderDto.cs" />
     <Compile Include="Model\Dto\BookmarkDto.cs" />
-    <Compile Include="Model\Dto\ClientBookDto.cs" />
-    <Compile Include="Model\Dto\ClientBookmarkDto.cs" />
-    <Compile Include="Model\Dto\ClientGenreDto.cs" />
     <Compile Include="Model\Dto\GenreDto.cs" />
-    <Compile Include="Model\Dto\IClientEntity.cs" />
     <Compile Include="Model\Request\Bookmark\AddBookmarkRequest.cs" />
     <Compile Include="Model\Request\Bookmark\DeleteBookmarkRequest.cs" />
     <Compile Include="Model\Request\Bookmark\GetBookmarksForBookRequest.cs" />
@@ -101,6 +97,7 @@
     <Compile Include="Model\Request\GetMissingRequest.cs" />
     <Compile Include="Model\Request\LoginRequest.cs" />
     <Compile Include="Model\Request\RequestBase.cs" />
+    <Compile Include="Model\Response\GetMissingResponse.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

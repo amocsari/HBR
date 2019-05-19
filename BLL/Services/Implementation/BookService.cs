@@ -6,6 +6,7 @@ using AutoMapper;
 using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
+using Common.Response;
 using DAL;
 using DAL.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -144,7 +145,7 @@ namespace BLL.Services.Implementation
             return await _goodReadsService.FindBookByIsbn(isbn);
         }
 
-        public async Task<List<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier)
+        public async Task<GetMissingResponse<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier)
         {
             var missingBooks = await _context.UserBooks
                 .AsNoTracking()
@@ -155,7 +156,24 @@ namespace BLL.Services.Implementation
                 .Where(b => !request.IdList.Contains(b.BookId))
                 .ToListAsync();
 
-            return _mapper.Map<List<BookDto>>(missingBooks);
+            var remoteDtoList = _mapper.Map<List<BookDto>>(missingBooks);
+            var synchedIdList = await _context.UserBooks
+                .AsNoTracking()
+                .Where(ub => ub.UserIdentifier == userIdentifier)
+                .Select(ub => ub.Book)
+                .Where(b => request.IdList.Contains(b.BookId))
+                .Select(b => b.BookId)
+                .ToListAsync();
+
+            var missingIdList = request.IdList.Where(id => !synchedIdList.Contains(id)).ToList();
+
+            var response = new GetMissingResponse<BookDto>
+            {
+                MissingIdList = missingIdList,
+                RemoteDtoList = remoteDtoList
+            };
+
+            return response;
         }
 
         public async Task<List<BookDto>> GetBooksByUser(string userIdentifier)
