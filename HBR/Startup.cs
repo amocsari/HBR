@@ -38,7 +38,7 @@ namespace HBR
             services.AddScoped<IHbrDbContext, HbrDbContext>();
             services.AddMvc(c => c.Filters.Add(typeof(ExceptionFilter))).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-            services.AddDbContext<HbrDbContext>(options => options.UseSqlServer(localConnectionString));
+            services.AddDbContext<HbrDbContext>(options => options.UseSqlServer(azureConnectionString));
 
             services.AddSingleton(service => Mappings.Configure());
             services.AddScoped<IBookService, BookService>();
