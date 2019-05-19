@@ -1,16 +1,15 @@
 ﻿using BLL.Services.Interface;
 using Common.Dto;
 using Common.Request;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace HBR.Controllers
 {
-    [Authorize]
     public class BookController : BaseController
     {
         private readonly IBookService _bookService;
@@ -35,7 +34,7 @@ namespace HBR.Controllers
         }
 
         [HttpDelete]
-        public Task DeleteBookById(int bookId)
+        public Task DeleteBookById(string bookId)
         {
             return _bookService.DeleteBookById(bookId, UserId);
         }
@@ -53,13 +52,13 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
-        public Task<BookDto> AddNewBook([FromBody]AddNewBookRequest request)
+        public Task<BookDto> AddNewBook([FromBody]AddOrEditBookRequest request)
         {
             return _bookService.AddNewBook(request, UserId);
         }
 
         [HttpPost]
-        public Task<BookDto> UpdateBook([FromBody]UpdateBookRequest request)
+        public Task<BookDto> UpdateBook([FromBody]AddOrEditBookRequest request)
         {
             return _bookService.UpdateBook(request, UserId);
         }
@@ -98,13 +97,7 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
-        public Task<List<BookDto>> BulkInsertBooks([FromBody]List<AddNewBookRequest> requestList)
-        {
-            return _bookService.BulkInsert(requestList, UserId);
-        }
-
-        [HttpPost]
-        public Task<List<BookDto>> BulkUpdateBooks([FromBody]List<UpdateBookRequest> requestList)
+        public Task<List<BookDto>> BulkUpdateBooks([FromBody]List<AddOrEditBookRequest> requestList)
         {
             return _bookService.BulkUpdate(requestList, UserId);
         }

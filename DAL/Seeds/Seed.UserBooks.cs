@@ -10,7 +10,7 @@ namespace DAL.Seeds
             modelBuilder.Entity<UserBook>()
                 .HasData(new UserBook
                 {
-                    BookId = 1,
+                    BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                     Progress = 0,
                     UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                 });
@@ -18,7 +18,7 @@ namespace DAL.Seeds
             modelBuilder.Entity<UserBook>()
                 .HasData(new UserBook
                 {
-                    BookId = 1,
+                    BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                     Progress = 0,
                     UserIdentifier = "46c15a9b-9184-46d5-a77e-ca21cd5cbe6f"
                 });
@@ -26,7 +26,7 @@ namespace DAL.Seeds
             modelBuilder.Entity<UserBook>()
                 .HasData(new UserBook
                 {
-                    BookId = 2,
+                    BookId = "3cfb0d9e-1c37-499d-9271-0dd7b17400d3",
                     Progress = 0,
                     UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                 });
@@ -34,7 +34,7 @@ namespace DAL.Seeds
             modelBuilder.Entity<UserBook>()
                 .HasData(new UserBook
                 {
-                    BookId = 3,
+                    BookId = "b8c55736-422e-49d3-9dc3-d406bdd53d8c",
                     Progress = 0,
                     UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                 });

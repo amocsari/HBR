@@ -71,7 +71,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity\BookDetailActivity.cs" />
-    <Compile Include="Activity\LoginActivity.cs" />
     <Compile Include="Activity\MainActivity.cs" />
     <Compile Include="Auth\AuthenticationProvider.cs" />
     <Compile Include="Auth\TokenCacheHelper.cs" />
@@ -81,7 +80,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="HbrApplication.cs" />
+    <Compile Include="Library\BookViewHolder.cs" />
+    <Compile Include="Library\LibraryAdapter.cs" />
     <Compile Include="Model\Dto\BookDto.cs" />
+    <Compile Include="Model\Dto\BookHeaderDto.cs" />
     <Compile Include="Model\Dto\BookmarkDto.cs" />
     <Compile Include="Model\Dto\ClientBookDto.cs" />
     <Compile Include="Model\Dto\ClientBookmarkDto.cs" />
@@ -93,13 +95,11 @@
     <Compile Include="Model\Request\GetMissingRequest.cs" />
     <Compile Include="Model\Request\QueryBooksRequest.cs" />
     <Compile Include="Model\Request\UpdateBookProgressRequest.cs" />
-    <Compile Include="Model\Request\UpdateBookRequest.cs" />
-    <Compile Include="Library\BookViewHolder.cs" />
-    <Compile Include="Library\LibraryAdapter.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="libman.json" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Properties\AndroidManifest.xml" />
     <None Include="Assets\AboutAssets.txt" />
@@ -289,7 +289,7 @@
       <Version>2.2.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Identity.Client">
-      <Version>3.0.8</Version>
+      <Version>2.7.1</Version>
     </PackageReference>
     <PackageReference Include="sqlite-net">
       <Version>1.0.8</Version>
@@ -511,6 +511,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_bookmark_white_48dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\menu_account.xml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

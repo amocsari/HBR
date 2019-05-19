@@ -9,7 +9,7 @@ namespace DAL.Entity
     public class Book
     {
         [Key]
-        public int BookId { get; set; }
+        public string BookId { get; set; }
 
         public string Isbn { get; set; }
 
@@ -22,7 +22,7 @@ namespace DAL.Entity
         public int PageNumber { get; set; }
 
         [ForeignKey("Genre")]
-        public int? GenreId { get; set; }
+        public string GenreId { get; set; }
 
         [Required]
         public bool Deleted { get; set; }

@@ -1,9 +1,10 @@
-﻿namespace HbrClient.Model.Request
+﻿using System;
+
+namespace HbrClient.Model.Request
 {
     public class AddBookToShelfRequest
     {
-        public int BookId { get; set; }
-        public string UserIdentifier { get; set; }
+        public string BookId { get; set; }
         public int? Progress { get; set; }
     }
 }

@@ -3199,14 +3199,20 @@ namespace HbrClient
 			// aapt resource value: 0x7f0900c9
 			public const int media_actions = 2131296457;
 			
-			// aapt resource value: 0x7f0900e2
-			public const int menuItem_libraryItem_delete = 2131296482;
-			
 			// aapt resource value: 0x7f0900e0
-			public const int menuItem_libraryItem_details = 2131296480;
+			public const int menuItem_account_login = 2131296480;
 			
 			// aapt resource value: 0x7f0900e1
-			public const int menuItem_libraryItem_updateProgress = 2131296481;
+			public const int menuItem_account_logout = 2131296481;
+			
+			// aapt resource value: 0x7f0900e4
+			public const int menuItem_libraryItem_delete = 2131296484;
+			
+			// aapt resource value: 0x7f0900e2
+			public const int menuItem_libraryItem_details = 2131296482;
+			
+			// aapt resource value: 0x7f0900e3
+			public const int menuItem_libraryItem_updateProgress = 2131296483;
 			
 			// aapt resource value: 0x7f0900d6
 			public const int message = 2131296470;
@@ -3812,7 +3818,10 @@ namespace HbrClient
 		{
 			
 			// aapt resource value: 0x7f0f0000
-			public const int menu_library_item = 2131689472;
+			public const int menu_account = 2131689472;
+			
+			// aapt resource value: 0x7f0f0001
+			public const int menu_library_item = 2131689473;
 			
 			static Menu()
 			{

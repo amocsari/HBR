@@ -10,11 +10,11 @@ namespace DAL.Entity
     public class Bookmark
     {
         [Key]
-        public int BookmarkId { get; set; }
+        public string BookmarkId { get; set; }
 
         [Required]
         [ForeignKey("Book")]
-        public int BookId { get; set; }
+        public string BookId { get; set; }
 
         [Required]
         public string UserIdentifier { get; set; }

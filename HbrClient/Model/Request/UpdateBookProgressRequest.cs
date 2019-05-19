@@ -1,8 +1,10 @@
-﻿namespace HbrClient.Model.Request
+﻿using System;
+
+namespace HbrClient.Model.Request
 {
     public class UpdateBookProgressRequest
     {
-        public int BookId { get; set; }
+        public string BookId { get; set; }
         public int NewProgress { get; set; }
     }
 }

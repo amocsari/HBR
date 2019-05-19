@@ -117,15 +117,15 @@ namespace HbrClient
                 {
                     if (item is ClientBookDto book)
                     {
-                        connection.Query<T>("UPDATE ClientBookDto set BookId=?, Isbn=?, Title=?, Author=?, PageNumber=?, GenreId=? Where ClientId=?", book.BookId, book.Isbn, book.Title, book.Author, book.PageNumber, book.GenreId, book.ClientId);
+                        connection.Query<T>("UPDATE ClientBookDto set Isbn=?, Title=?, Author=?, PageNumber=?, GenreId=?, MofidiedOffline=? Where BookId=?", book.Isbn, book.Title, book.Author, book.PageNumber, book.GenreId, book.ModifiedOffline, book.BookId);
                     }
                     else if (item is ClientBookmarkDto bookmark)
                     {
-                        connection.Query<T>("UPDATE ClientBookmarkDto set BookmarkId=?, BookId=?, PageNumber=? Where ClientId=?", bookmark.BookmarkId, bookmark.BookId, bookmark.PageNumber, bookmark.ClientId);
+                        connection.Query<T>("UPDATE ClientBookmarkDto set BookId=?, PageNumber=? Where BookmarkId=?", bookmark.BookId, bookmark.PageNumber, bookmark.BookmarkId);
                     }
                     else if (item is ClientGenreDto genre)
                     {
-                        connection.Query<T>("UPDATE ClientGenreDto set GenreId=?, GenreName=? Where ClientId=?", genre.GenreId, genre.GenreName, genre.ClientId);
+                        connection.Query<T>("UPDATE ClientGenreDto set GenreName=? Where GenreId=?", genre.GenreName, genre.GenreId);
                     }
                     else
                     {

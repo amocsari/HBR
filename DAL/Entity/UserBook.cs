@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Entity
@@ -8,7 +9,7 @@ namespace DAL.Entity
     {
         [Required]
         [ForeignKey("Book")]
-        public int BookId { get; set; }
+        public string BookId { get; set; }
 
         [Required]
         public string UserIdentifier { get; set; }

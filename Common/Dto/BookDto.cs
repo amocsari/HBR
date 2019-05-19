@@ -5,7 +5,7 @@ namespace Common.Dto
 {
     public class BookDto
     {
-        public int? BookId { get; set; }
+        public string BookId { get; set; }
 
         public string Isbn { get; set; }
         
@@ -15,7 +15,7 @@ namespace Common.Dto
         
         public int PageNumber { get; set; }
 
-        public int? GenreId { get; set; }
+        public string GenreId { get; set; }
 
         public DateTime LastUpdated { get; set; }
 

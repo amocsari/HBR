@@ -21,9 +21,8 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entity.Book", b =>
                 {
-                    b.Property<int>("BookId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("BookId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Author");
 
@@ -32,7 +31,7 @@ namespace DAL.Migrations
                     b.Property<string>("Extension")
                         .IsRequired();
 
-                    b.Property<int?>("GenreId");
+                    b.Property<string>("GenreId");
 
                     b.Property<string>("Isbn");
 
@@ -55,48 +54,48 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            BookId = 1,
+                            BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                             Author = "J. R. R. Tolkien",
                             Deleted = false,
                             Extension = "pdf",
-                            GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(5423),
+                            GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 888, DateTimeKind.Local).AddTicks(8984),
                             PageNumber = 248,
                             Title = "The Fellowship of the Ring",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
                         new
                         {
-                            BookId = 2,
+                            BookId = "3cfb0d9e-1c37-499d-9271-0dd7b17400d3",
                             Author = "J. R. R. Tolkien",
                             Deleted = false,
                             Extension = "pdf",
-                            GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8118),
+                            GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(1641),
                             PageNumber = 249,
                             Title = "The Two Towers",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
                         new
                         {
-                            BookId = 3,
+                            BookId = "b8c55736-422e-49d3-9dc3-d406bdd53d8c",
                             Author = "J. R. R. Tolkien",
                             Deleted = false,
                             Extension = "pdf",
-                            GenreId = 1,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8157),
+                            GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(1681),
                             PageNumber = 250,
                             Title = "The Return of the King",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
                         new
                         {
-                            BookId = 4,
+                            BookId = "1a07dc8b-8ef3-4757-a4f2-bdef6b78bd3a",
                             Author = "Alexander Freed",
                             Deleted = false,
                             Extension = "pdf",
-                            GenreId = 2,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(8174),
+                            GenreId = "7a4f9a69-3afd-4dae-829a-ae4691a415db",
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(1697),
                             PageNumber = 195,
                             Title = "Rogue One: A Star Wars Story",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -105,11 +104,11 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entity.Bookmark", b =>
                 {
-                    b.Property<int>("BookmarkId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("BookmarkId")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BookId");
+                    b.Property<string>("BookId")
+                        .IsRequired();
 
                     b.Property<bool>("Deleted");
 
@@ -129,28 +128,28 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            BookmarkId = 1,
-                            BookId = 1,
+                            BookmarkId = "ad536b7d-08df-48fe-87e4-7253c1c76eac",
+                            BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(1329),
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(5043),
                             PageNumber = 25,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
                         new
                         {
-                            BookmarkId = 2,
-                            BookId = 2,
+                            BookmarkId = "bbccd264-fb13-421d-8335-c3267bdeaeea",
+                            BookId = "3cfb0d9e-1c37-499d-9271-0dd7b17400d3",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(2844),
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(6589),
                             PageNumber = 37,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
                         new
                         {
-                            BookmarkId = 3,
-                            BookId = 3,
+                            BookmarkId = "74762732-bc6b-4346-a60a-9117902afbd9",
+                            BookId = "b8c55736-422e-49d3-9dc3-d406bdd53d8c",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 448, DateTimeKind.Local).AddTicks(2876),
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 889, DateTimeKind.Local).AddTicks(6620),
                             PageNumber = 48,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         });
@@ -158,9 +157,8 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Entity.Genre", b =>
                 {
-                    b.Property<int>("GenreId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("GenreId")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<bool>("Deleted");
 
@@ -176,23 +174,23 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            GenreId = 1,
+                            GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
                             Deleted = false,
                             GenreName = "Fantasy",
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 445, DateTimeKind.Local).AddTicks(5583)
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 886, DateTimeKind.Local).AddTicks(7716)
                         },
                         new
                         {
-                            GenreId = 2,
+                            GenreId = "7a4f9a69-3afd-4dae-829a-ae4691a415db",
                             Deleted = false,
                             GenreName = "Sci-Fi",
-                            LastUpdated = new DateTime(2019, 5, 19, 13, 29, 35, 447, DateTimeKind.Local).AddTicks(98)
+                            LastUpdated = new DateTime(2019, 5, 19, 21, 45, 31, 888, DateTimeKind.Local).AddTicks(3739)
                         });
                 });
 
             modelBuilder.Entity("DAL.Entity.UserBook", b =>
                 {
-                    b.Property<int>("BookId");
+                    b.Property<string>("BookId");
 
                     b.Property<string>("UserIdentifier");
 
@@ -207,28 +205,28 @@ namespace DAL.Migrations
                     b.HasData(
                         new
                         {
-                            BookId = 1,
+                            BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                             Deleted = false,
                             Progress = 0
                         },
                         new
                         {
-                            BookId = 1,
+                            BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                             UserIdentifier = "46c15a9b-9184-46d5-a77e-ca21cd5cbe6f",
                             Deleted = false,
                             Progress = 0
                         },
                         new
                         {
-                            BookId = 2,
+                            BookId = "3cfb0d9e-1c37-499d-9271-0dd7b17400d3",
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                             Deleted = false,
                             Progress = 0
                         },
                         new
                         {
-                            BookId = 3,
+                            BookId = "b8c55736-422e-49d3-9dc3-d406bdd53d8c",
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba",
                             Deleted = false,
                             Progress = 0

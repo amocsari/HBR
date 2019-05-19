@@ -10,7 +10,7 @@ namespace DAL.Entity
     public class Genre
     {
         [Key]
-        public int GenreId { get; set; }
+        public string GenreId { get; set; }
 
         [Required]
         public string GenreName { get; set; }

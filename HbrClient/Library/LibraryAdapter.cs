@@ -119,7 +119,7 @@ namespace HbrClient.Library
                     {
                         var request = new UpdateBookProgressRequest
                         {
-                            BookId = Library[position].BookId.Value
+                            BookId = Library[position].BookId
                         };
                         try
                         {

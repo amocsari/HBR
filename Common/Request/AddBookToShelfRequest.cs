@@ -1,8 +1,10 @@
-﻿namespace Common.Request
+﻿using System;
+
+namespace Common.Request
 {
     public class AddBookToShelfRequest
     {
-        public int BookId { get; set; }
+        public string BookId { get; set; }
         public int? Progress { get; set; }
     }
 }

@@ -10,14 +10,14 @@ namespace DAL.Seeds
             modelBuilder.Entity<Genre>()
                 .HasData(new Genre
                 {
-                    GenreId = 1,
+                    GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
                     GenreName = "Fantasy"
                 });
 
             modelBuilder.Entity<Genre>()
                 .HasData(new Genre
                 {
-                    GenreId = 2,
+                    GenreId = "7a4f9a69-3afd-4dae-829a-ae4691a415db",
                     GenreName = "Sci-Fi"
                 });
 

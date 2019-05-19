@@ -5,6 +5,7 @@ using Common.Request;
 using DAL;
 using DAL.Entity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteBookmark(int bookmarkId, string userIdentifier)
+        public async Task DeleteBookmark(string bookmarkId, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
             var entity = await _context.Bookmarks.IgnoreQueryFilters().FirstOrDefaultAsync(bm => bm.BookmarkId == bookmarkId)
@@ -50,7 +51,7 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<BookmarkDto>> GetBookmarksForBook(int bookId, string userIdentifier)
+        public async Task<List<BookmarkDto>> GetBookmarksForBook(string bookId, string userIdentifier)
         {
             await CheckIfBookExists(bookId);
 
@@ -69,7 +70,7 @@ namespace BLL.Services.Implementation
             return _mapper.Map<List<BookmarkDto>>(missingBookmarks);
         }
 
-        private async Task CheckIfBookExists(int bookId)
+        private async Task CheckIfBookExists(string bookId)
         {
             var bookExists = await _context.Books.AsNoTracking().AnyAsync(b => b.BookId == bookId);
             if (!bookExists)

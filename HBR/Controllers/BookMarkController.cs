@@ -2,6 +2,7 @@
 using Common.Dto;
 using Common.Request;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace HBR.Controllers
         }
 
         [HttpGet]
-        public Task<List<BookmarkDto>> GetBookmarksForBook(int bookId)
+        public Task<List<BookmarkDto>> GetBookmarksForBook(string bookId)
         {
             return _bookmarkService.GetBookmarksForBook(bookId, UserId);
         }
@@ -29,7 +30,7 @@ namespace HBR.Controllers
         }
 
         [HttpDelete]
-        public Task DeleteBookMark(int bookmarkId)
+        public Task DeleteBookMark(string bookmarkId)
         {
             return _bookmarkService.DeleteBookmark(bookmarkId, UserId);
         }

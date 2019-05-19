@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Request
 {
     public class GetMissingRequest
     {
-        public List<int> IdList { get; set; } = new List<int>();
+        public List<string> IdList { get; set; } = new List<string>();
     }
 }

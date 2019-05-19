@@ -188,7 +188,7 @@ namespace HbrClient
                         //TODO: külön request osztály
                         var bookmark = new BookmarkDto
                         {
-                            BookId = Dto.BookId.Value,
+                            BookId = Dto.BookId,
                             PageNumber = pageNumber
                         };
 
@@ -274,7 +274,7 @@ namespace HbrClient
                             GenreList = await response.Content.ReadAsAsync<List<GenreDto>>();
                         }
 
-                        if (Dto.BookId.HasValue)
+                        if (!string.IsNullOrEmpty(Dto.BookId))
                         {
                             response = await client.GetAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook?bookId={Dto.BookId}");
                             if (response.IsSuccessStatusCode)

@@ -4,9 +4,9 @@ namespace HbrClient.Model.Dto
 {
     public class BookmarkDto
     {
-        public int BookmarkId { get; set; }
+        public string BookmarkId { get; set; }
         
-        public int BookId { get; set; }
+        public string BookId { get; set; }
         
         public int PageNumber { get; set; }
 

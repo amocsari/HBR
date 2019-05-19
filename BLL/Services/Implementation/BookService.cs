@@ -41,7 +41,7 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task<BookDto> AddNewBook(AddNewBookRequest request, string userIdentifier)
+        public async Task<BookDto> AddNewBook(AddOrEditBookRequest request, string userIdentifier)
         {
             var entity = _mapper.Map<Book>(request);
 
@@ -81,37 +81,15 @@ namespace BLL.Services.Implementation
             return _mapper.Map<BookDto>(newEntity);
         }
 
-        public async Task<List<BookDto>> BulkInsert(List<AddNewBookRequest> requestList, string userIdentifier)
+        public async Task<List<BookDto>> BulkUpdate(List<AddOrEditBookRequest> requestList, string userIdentifier)
         {
-            var entityList = _mapper.Map<List<Book>>(requestList);
-            foreach (var entity in entityList)
-            {
-                entity.LastUpdated = _timeService.UtcNow;
-                entity.Extension = "pdf";
-            }
-
-            await _context.Books.AddRangeAsync(entityList);
-            await _context.SaveChangesAsync();
-
-            var newEntityList = _context.Books
-                .AsNoTracking()
-                .Include(b => b.Bookmarks)
-                .Include(b => b.Genre)
-                .Where(b => entityList.Any(e => e.BookId == b.BookId));
-
-            var newDtoList = _mapper.Map<List<BookDto>>(newEntityList);
-            return newDtoList;
-        }
-
-        public async Task<List<BookDto>> BulkUpdate(List<UpdateBookRequest> requestList, string userIdentifier)
-        {
-            var entityList = await _context.Books
+            var entitiesToUpdate = await _context.Books
                 .Where(b => requestList.Any(r => r.BookId == b.BookId))
                 .Include(b => b.Genre)
                 .Include(b => b.Bookmarks)
                 .ToListAsync();
 
-            foreach (var entity in entityList)
+            foreach (var entity in entitiesToUpdate)
             {
                 var request = requestList.FirstOrDefault(r => r.BookId == entity.BookId);
 
@@ -123,13 +101,33 @@ namespace BLL.Services.Implementation
                 entity.LastUpdated = _timeService.UtcNow;
             }
 
+            var requestsToInsert = requestList
+                .Where(b => !entitiesToUpdate.Any(e => e.BookId == b.BookId))
+                .ToList();
+            var entitiesToInsert = _mapper.Map<List<Book>>(requestsToInsert);
+
+            foreach (var entity in entitiesToInsert)
+            {
+                entity.LastUpdated = _timeService.UtcNow;
+                entity.Extension = "pdf";
+            }
+            await _context.Books.AddRangeAsync(entitiesToInsert);
             await _context.SaveChangesAsync();
 
-            var newDtoList = _mapper.Map<List<BookDto>>(entityList);
-            return newDtoList;
+            var insertedEntityList = _context.Books
+                .AsNoTracking()
+                .Include(b => b.Bookmarks)
+                .Include(b => b.Genre)
+                .Where(b => entitiesToInsert.Any(e => e.BookId == b.BookId));
+
+            var insertedDtoList = _mapper.Map<List<BookDto>>(insertedEntityList);
+            var updatedDtoList = _mapper.Map<List<BookDto>>(entitiesToUpdate);
+
+            updatedDtoList.AddRange(insertedDtoList);
+            return updatedDtoList;
         }
 
-        public async Task DeleteBookById(int bookId, string userIdentifier)
+        public async Task DeleteBookById(string bookId, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
             var entity = await _context.Books.IgnoreQueryFilters().FirstOrDefaultAsync(book => book.BookId == bookId)
@@ -180,9 +178,9 @@ namespace BLL.Services.Implementation
                 .Include(b => b.Genre)
                 .AsNoTracking();
 
-            if (request.Genre.HasValue)
+            if (!string.IsNullOrEmpty(request.Genre))
             {
-                bookQuery = bookQuery.Where(book => book.GenreId == request.Genre.Value);
+                bookQuery = bookQuery.Where(book => book.GenreId == request.Genre);
             }
 
             if (!string.IsNullOrEmpty(request.Author))
@@ -199,7 +197,7 @@ namespace BLL.Services.Implementation
             return _mapper.Map<List<BookDto>>(bookList);
         }
 
-        public async Task<BookDto> UpdateBook(UpdateBookRequest request, string userIdentifier)
+        public async Task<BookDto> UpdateBook(AddOrEditBookRequest request, string userIdentifier)
         {
 
             var entity = await _context.Books

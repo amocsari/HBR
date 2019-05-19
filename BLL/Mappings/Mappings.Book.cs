@@ -11,7 +11,7 @@ namespace BLL.Mappings
         {
             cfg.CreateMap<Book, BookDto>();
 
-            cfg.CreateMap<AddNewBookRequest, Book>();
+            cfg.CreateMap<AddOrEditBookRequest, Book>();
 
             cfg.CreateMap<AddBookToShelfRequest, UserBook>();
 
