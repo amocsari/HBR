@@ -12,5 +12,6 @@ namespace BLL.Services.Interface
         Task DeleteBookmark(DeleteBookmarkRequest request, string userIdentifier);
         Task<List<BookmarkDto>> GetBookmarksForBook(GetBookmarksForBookRequest request, string userIdentifier);
         Task<GetMissingResponse<BookmarkDto>> GetMissingBookmarks(GetMissingRequest request, string userIdentifier);
+        Task BulkInsertBookmarks(List<AddBookmarkRequest> requestList, string userIdentifier);
     }
 }

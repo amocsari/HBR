@@ -171,7 +171,7 @@ namespace HbrClient.Library
             NotifyDataSetChanged();
         }
 
-        internal void UpdateBook(BookDto returnedBook)
+        public void UpdateBook(BookDto returnedBook)
         {
             var oldBook = Library.FirstOrDefault(b => b.BookId == returnedBook.BookId);
             oldBook.Author = returnedBook.Author;
@@ -181,6 +181,12 @@ namespace HbrClient.Library
             oldBook.Genre = returnedBook.Genre;
             oldBook.Bookmarks = returnedBook.Bookmarks;
             oldBook.PageNumber = returnedBook.PageNumber;
+            NotifyDataSetChanged();
+        }
+
+        public void Clear()
+        {
+            Library.Clear();
             NotifyDataSetChanged();
         }
     }

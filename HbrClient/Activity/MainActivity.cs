@@ -40,9 +40,10 @@ namespace HbrClient
             UserDialogs.Init(this);
             base.OnCreate(savedInstanceState);
 
-            HbrApplication.ParentActivity = new UIParent(this);
-
             SetContentView(Resource.Layout.activity_main);
+
+            //HbrApplication.ParentActivity = new UIParent(this);
+            _database = Database.Instance;
 
             Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
@@ -53,9 +54,8 @@ namespace HbrClient
             mAdapter.Context = this;
             mRecyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
-            await SynchLocalWithRemoteAsync();
-            var bookList = await GetLocalOrRemoteBookListAsync();
-            mAdapter.AddBooks(bookList);
+            //TODO: még nincs token cache
+            //await SynchronizeWithServer();
 
             var AuthorQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_author_query);
             var TitleQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_title_query);
@@ -83,6 +83,7 @@ namespace HbrClient
                     Login();
                     break;
                 case Resource.Id.menuItem_account_logout:
+                    Logout();
                     break;
             }
 
@@ -91,42 +92,96 @@ namespace HbrClient
 
         private async Task Login()
         {
-            var app = HbrApplication.PublicClientApp;
-            var accounts = await app.GetAccountsAsync();
-            try
+            #region tmp ki lesz veve
+            var loginConfig = new LoginConfig
             {
-                var authresult = await app.AcquireTokenAsync(HbrApplication.ApiScopes, HbrApplication.ParentActivity);
-                //AuthenticationResult ar = await app.AcquireTokenInteractive(HbrApplication.ApiScopes)
-                //                                        //.WithAccount(GetAccountByPolicy(accounts, HbrApplication.PolicySignUpSignIn))
-                //                                        //.WithParentActivityOrWindow(HbrApplication.ParentActivity)
-                //                                        .ExecuteAsync();
-            }
-            catch (Exception e)
-            {
+                CancelText = "Mégse",
+                OkText = "Bejelentkezés",
+                Title = "Bejelentkezés",
+                LoginPlaceholder = "Felhasználónév",
+                PasswordPlaceholder = "Jelszó",
+                Message = "Adja meg a bejelentkezési adatait"
+            };
+            var loginResult = await UserDialogs.Instance.LoginAsync(loginConfig);
 
+            using (var client = new HttpClient())
+            using (var dialog = UserDialogs.Instance.Loading("Logging in!"))
+            {
+                var request = new LoginRequest
+                {
+                    Password = loginResult.Password,
+                    UserName = loginResult.LoginText
+                };
+
+                var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/account/loginuser", request);
+                if (!result.IsSuccessStatusCode)
+                {
+                    dialog.Dispose();
+                    await UserDialogs.Instance.AlertAsync("Hibás felhasználónév, vagy jelszó!", "Sikertelen bejelentkezés!");
+                    return;
+                }
+
+                HbrApplication.UserIdentifier = await result.Content.ReadAsStringAsync();
             }
+            await SynchronizeWithServer();
+            var localBooks = _database.SelectTable<BookDto>();
+            mAdapter.AddBooks(localBooks);
+            #endregion
+
+            //var app = HbrApplication.PublicClientApp;
+            //var accounts = await app.GetAccountsAsync();
+            //try
+            //{
+            //    var authresult = await app.AcquireTokenAsync(HbrApplication.ApiScopes, HbrApplication.ParentActivity);
+            //    //AuthenticationResult ar = await app.AcquireTokenInteractive(HbrApplication.ApiScopes)
+            //    //                                        //.WithAccount(GetAccountByPolicy(accounts, HbrApplication.PolicySignUpSignIn))
+            //    //                                        //.WithParentActivityOrWindow(HbrApplication.ParentActivity)
+            //    //                                        .ExecuteAsync();
+            //}
+            //catch (Exception e)
+            //{
+
+            //}
         }
 
-        private async Task<List<BookDto>> GetLocalOrRemoteBookListAsync()
+        private async Task Logout()
         {
-            if (CheckInternetConnection())
+            #region tmp ki lesz veve
+            using (var dialog = UserDialogs.Instance.Loading("Logging out!"))
             {
-                return await GetBooksFromServerAsync();
+                HbrApplication.UserIdentifier = string.Empty;
+                mAdapter.Clear();
             }
-            else
+            #endregion
+        }
+
+        private async Task SynchronizeWithServer()
+        {
+            if (!CheckInternetConnection())
+                return;
+
+            if (string.IsNullOrEmpty(HbrApplication.UserIdentifier))
             {
-                return _database.SelectTable<BookDto>();
+                await UserDialogs.Instance.AlertAsync("Az alkalmazás használatához be kell jelentkezni!", "Kijelentkezve");
+                return;
+            }
+
+            using (var dialog = UserDialogs.Instance.Loading("Synchronizing!")) ;
+            {
+                await SyncGenresWithServer();
+                await SyncBookmarksWithServer();
+                await SyncBooksWithServer();
             }
         }
 
         private async void QueryButtonOnClick(object sender, EventArgs e)
         {
-            var bookList = await GetBooksFromServerAsync(authorQuery: AuthorQuery, titleQuery: TitleQuery);
-            mAdapter.Library.Clear();
-            mAdapter.AddBooks(bookList);
+            //var bookList = await GetBooksFromServerAsync(authorQuery: AuthorQuery, titleQuery: TitleQuery);
+            //mAdapter.Library.Clear();
+            //mAdapter.AddBooks(bookList);
 
-            AuthorQuery = string.Empty;
-            TitleQuery = string.Empty;
+            //AuthorQuery = string.Empty;
+            //TitleQuery = string.Empty;
         }
 
         private async void AuthorQueryTextViewOnClick(object sender, EventArgs e)
@@ -167,50 +222,6 @@ namespace HbrClient
             //StartActivityForResult(intent, get_file_request_code);
 
             StartActivityForResult(new Intent(this, typeof(BookDetailActivity)), BookDetailActivity.RequestCode);
-        }
-
-        protected override void OnSaveInstanceState(Bundle outState)
-        {
-            base.OnSaveInstanceState(outState);
-        }
-
-        private async Task<List<BookDto>> GetBooksFromServerAsync(string authorQuery = "", string titleQuery = "", bool showLoading = true)
-        {
-            if (!CheckInternetConnection())
-                return new List<BookDto>();
-
-            using (var client = new HttpClient())
-            {
-                var dialog = UserDialogs.Instance.Loading(title: "Loading", show: showLoading);
-                try
-                {
-                    AuthenticationResult authenticationResult;
-                    var app = HbrApplication.PublicClientApp;
-                    var accounts = await app.GetAccountsAsync();
-                    authenticationResult = await app.AcquireTokenSilentAsync(HbrApplication.ApiScopes, GetAccountByPolicy(accounts, HbrApplication.PolicySignUpSignIn));
-
-                    //var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/getmybooks");
-                    #region tmp ki lesz veve
-                    var response = await client.GetAsync($"https://hbr.azurewebsites.net/api/book/getmybooks?useridentifier{HbrApplication.UserIdentifier}");
-                    #endregion
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var bookList = await response.Content.ReadAsAsync<List<BookDto>>();
-                        dialog.Dispose();
-                        return bookList;
-                    }
-                }
-                catch (MsalUiRequiredException)
-                {
-                    await UserDialogs.Instance.AlertAsync("Az alakalmazás használatához be kell jelentkezni!");
-                }
-                catch (Exception e)
-                {
-                }
-                dialog.Dispose();
-                return new List<BookDto>();
-            }
         }
 
         protected override async void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
@@ -388,66 +399,6 @@ namespace HbrClient
 
         }
 
-        private async Task SynchLocalWithRemoteAsync()
-        {
-            if (!CheckInternetConnection())
-                return;
-
-            var dialog = UserDialogs.Instance.Loading("Synchronizing!");
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    var localBookList = _database.SelectTable<BookDto>();
-                    var localBookIdList = localBookList
-                        .Select(lb => lb.BookId)
-                        .ToList();
-
-                    var request = new GetMissingRequest
-                    {
-                        IdList = localBookIdList,
-                        #region tmp ki lesz veve
-                        UserIdentifier = HbrApplication.UserIdentifier
-                        #endregion
-                    };
-
-                    var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var missingBooks = await result.Content.ReadAsAsync<List<BookDto>>();
-                        _database.AddElements(missingBooks);
-                    }
-
-                    var localModifiedBookList = localBookList.ToList();
-
-                    var bulkUpdateBookRequest = localModifiedBookList
-                        .Select(lb => new AddOrEditBookRequest
-                        {
-                            BookId = lb.BookId,
-                            Title = lb.Title,
-                            PageNumber = lb.PageNumber,
-                            Isbn = lb.Isbn,
-                            Author = lb.Author,
-                            GenreId = lb.GenreId,
-                            AutoCompleteData = false,
-                            #region tmp ki lesz veve
-                            UserIdentifier = HbrApplication.UserIdentifier
-                            #endregion
-                        }).ToList();
-
-                    result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkUpdateBooks", bulkUpdateBookRequest);
-                    if (result.IsSuccessStatusCode)
-                    {
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-
-            }
-            dialog.Dispose();
-        }
-
         private bool CheckInternetConnection()
         {
             ConnectivityManager cm = (ConnectivityManager)GetSystemService(Context.ConnectivityService);
@@ -468,7 +419,42 @@ namespace HbrClient
 
         private async Task SyncBooksWithServer()
         {
+            using (var client = new HttpClient())
+            {
+                var localBookList = _database.SelectTable<BookDto>();
+                var localBookIdList = localBookList.Select(lb => lb.BookId).ToList();
 
+                var request = new GetMissingRequest
+                {
+                    IdList = localBookIdList,
+                    #region tmp ki lesz veve
+                    UserIdentifier = HbrApplication.UserIdentifier
+                    #endregion
+                };
+
+                var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/GetMissingBooks", request);
+                if (!result.IsSuccessStatusCode)
+                    return;
+
+                var response = await result.Content.ReadAsAsync<GetMissingResponse<BookDto>>();
+                _database.AddElements(response.RemoteDtoList);
+
+                var booksToSend = localBookList
+                    .Where(lb => response.MissingIdList.Contains(lb.BookId))
+                    .Select(lb => new AddOrEditBookRequest
+                    {
+                        BookId = lb.BookId,
+                        Author = lb.Author,
+                        AutoCompleteData = false,
+                        GenreId = lb.GenreId,
+                        Isbn = lb.Isbn,
+                        PageNumber = lb.PageNumber,
+                        Title = lb.Title,
+                        #region tmp ki lesz veve
+                        UserIdentifier = HbrApplication.UserIdentifier
+                        #endregion
+                    }).ToList();
+            }
         }
 
         private async Task SyncBookmarksWithServer()
@@ -487,11 +473,25 @@ namespace HbrClient
                 };
 
                 var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/GetMissingBookmarks", request);
-                if (result.IsSuccessStatusCode)
-                {
-                    var response = await result.Content.ReadAsAsync<GetMissingResponse<BookmarkDto>>();
-                    _database.AddElements(response.RemoteDtoList);
-                }
+                if (!result.IsSuccessStatusCode)
+                    return;
+
+                var response = await result.Content.ReadAsAsync<GetMissingResponse<BookmarkDto>>();
+                _database.AddElements(response.RemoteDtoList);
+
+                var bookmarksToSend = localBookmarkList
+                    .Where(lbm => response.MissingIdList.Contains(lbm.BookmarkId))
+                    .Select(lbm => new AddBookmarkRequest
+                    {
+                        BookId = lbm.BookId,
+                        BookmarkId = lbm.BookmarkId,
+                        PageNumber = lbm.PageNumber,
+                        #region tmp ki lesz veve
+                        UserIdentifier = HbrApplication.UserIdentifier
+                        #endregion
+                    }).ToList();
+
+                await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/BulkUpdateBooks", bookmarksToSend);
             }
         }
 
@@ -501,15 +501,12 @@ namespace HbrClient
             {
                 var result = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
                 if (result.IsSuccessStatusCode)
-                {
-                    var genreList = await result.Content.ReadAsAsync<List<GenreDto>>();
+                    return;
 
-                    var localGenreList = _database.GetGenres();
-
-                    var newGenres = genreList.Where(g => !localGenreList.Any(lg => lg.GenreId == g.GenreId)).ToList();
-
-                    _database.AddElements(newGenres);
-                }
+                var genreList = await result.Content.ReadAsAsync<List<GenreDto>>();
+                var localGenreList = _database.GetGenres();
+                var newGenres = genreList.Where(g => !localGenreList.Any(lg => lg.GenreId == g.GenreId)).ToList();
+                _database.AddElements(newGenres);
             }
         }
     }

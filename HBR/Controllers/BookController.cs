@@ -128,7 +128,7 @@ namespace HBR.Controllers
         {
             //return _bookService.BulkUpdate(requestList, UserId);
             #region tmp ki lesz veve
-            return _bookService.BulkUpdate(requestList, requestList.First().UserIdentifier);
+            return _bookService.BulkUpdate(requestList, requestList.FirstOrDefault()?.UserIdentifier);
             #endregion
         }
     }

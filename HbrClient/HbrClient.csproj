@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity\BookDetailActivity.cs" />
+    <Compile Include="Activity\BookQueryActivity.cs" />
     <Compile Include="Activity\MainActivity.cs" />
     <Compile Include="Auth\AuthenticationProvider.cs" />
     <Compile Include="Auth\TokenCacheHelper.cs" />
@@ -518,6 +519,11 @@
   <ItemGroup>
     <AndroidResource Include="Resources\menu\menu_account.xml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\activity_book_query.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

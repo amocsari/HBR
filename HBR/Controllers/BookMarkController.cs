@@ -5,6 +5,7 @@ using Common.Response;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HBR.Controllers
@@ -51,6 +52,15 @@ namespace HBR.Controllers
             //return _bookmarkService.GetMissingBookmarks(request, UserId);
             #region tmp ki lesz veve
             return _bookmarkService.GetMissingBookmarks(request, request.UserIdentifier);
+            #endregion
+        }
+
+        [HttpPost]
+        public Task BulkInsertBookmarks([FromBody]List<AddBookmarkRequest> requestList)
+        {
+            //return _bookmarkService.BulkInsertBookmarks(requestList, UserId);
+            #region tmp ki lesz veve
+            return _bookmarkService.BulkInsertBookmarks(requestList, requestList.FirstOrDefault().UserIdentifier);
             #endregion
         }
     }

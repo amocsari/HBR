@@ -41,6 +41,14 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
+        public async Task BulkInsertBookmarks(List<AddBookmarkRequest> requestList, string userIdentifier)
+        {
+            var newEntities = _mapper.Map<List<Bookmark>>(requestList);
+
+            await _context.Bookmark.AddRangeAsync(newEntities);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteBookmark(DeleteBookmarkRequest request, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
