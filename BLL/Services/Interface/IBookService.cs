@@ -12,7 +12,7 @@ namespace BLL.Services.Interface
 
         Task<List<BookDto>> QueryBooks(QueryBooksRequest request);
 
-        Task DeleteBookById(string bookId, string userIdentifier);
+        Task DeleteBookById(DeleteBookByIdRequest request, string userIdentifier);
 
         Task AddBookToShelf(AddBookToShelfRequest request, string userIdentifier);
 
@@ -23,7 +23,7 @@ namespace BLL.Services.Interface
         Task<List<BookDto>> GetBooksByUser(string userIdentifier);
         Task<List<BookDto>> GetBooksByUploader(string userIdentifier);
 
-        Task<BookHeaderDto> FindBookByIsbn(string isbn, string userIdentifier);
+        Task<BookHeaderDto> FindBookByIsbn(string isbn);
         Task<List<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier);
 
         Task<List<BookDto>> BulkUpdate(List<AddOrEditBookRequest> requestList, string userIdentifier);

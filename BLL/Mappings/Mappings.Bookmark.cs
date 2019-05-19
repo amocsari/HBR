@@ -16,6 +16,8 @@ namespace BLL.Mappings
 
             cfg.CreateMap<BookmarkDto, Bookmark>();
 
+            cfg.CreateMap<AddBookmarkRequest, Bookmark>();
+
             return cfg;
         }
     }

@@ -18,27 +18,39 @@ namespace HBR.Controllers
         }
 
         [HttpGet]
-        public Task<List<BookmarkDto>> GetBookmarksForBook(string bookId)
+        public Task<List<BookmarkDto>> GetBookmarksForBook(GetBookmarksForBookRequest request)
         {
-            return _bookmarkService.GetBookmarksForBook(bookId, UserId);
+            //return _bookmarkService.GetBookmarksForBook(request, UserId);
+            #region tmp ki lesz veve
+            return _bookmarkService.GetBookmarksForBook(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpPost]
-        public Task AddBookmark([FromBody]BookmarkDto dto)
+        public Task AddBookmark([FromBody]AddBookmarkRequest request)
         {
-            return _bookmarkService.AddBookmark(dto, UserId);
+            //return _bookmarkService.AddBookmark(request, UserId);
+            #region tmp ki lesz veve
+            return _bookmarkService.AddBookmark(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpDelete]
-        public Task DeleteBookMark(string bookmarkId)
+        public Task DeleteBookMark(DeleteBookmarkRequest request)
         {
-            return _bookmarkService.DeleteBookmark(bookmarkId, UserId);
+            //return _bookmarkService.DeleteBookmark(request, UserId);
+            #region tmp ki lesz veve
+            return _bookmarkService.DeleteBookmark(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpGet]
         public Task GetMissingBookmarks(GetMissingRequest request)
         {
-            return _bookmarkService.GetMissingBookmarks(request, UserId);
+            //return _bookmarkService.GetMissingBookmarks(request, UserId);
+            #region tmp ki lesz veve
+            return _bookmarkService.GetMissingBookmarks(request, request.UserIdentifier);
+            #endregion
         }
     }
 }

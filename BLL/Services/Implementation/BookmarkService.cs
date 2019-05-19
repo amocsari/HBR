@@ -25,37 +25,40 @@ namespace BLL.Services.Implementation
             _timeService = timeService;
         }
 
-        public async Task AddBookmark(BookmarkDto dto, string userIdentifier)
+        public async Task AddBookmark(AddBookmarkRequest request, string userIdentifier)
         {
-            var book = await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.BookId == dto.BookId)
+            var book = await _context.Book.AsNoTracking().FirstOrDefaultAsync(b => b.BookId == request.BookId)
                 ?? throw new HbrException("Ilyen azonosítójú könyv nem létezik!");
 
-            if (book.PageNumber < dto.PageNumber)
+            if (book.PageNumber < request.PageNumber)
                 throw new HbrException("A könyvjelző oldalszáma nem lehet nagyobb mint a könyv oldalainak száma!");
 
-            var entity = _mapper.Map<Bookmark>(dto);
+            var entity = _mapper.Map<Bookmark>(request);
             entity.LastUpdated = _timeService.UtcNow;
 
-            await _context.Bookmarks.AddAsync(entity);
+            await _context.Bookmark.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteBookmark(string bookmarkId, string userIdentifier)
+        public async Task DeleteBookmark(DeleteBookmarkRequest request, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
-            var entity = await _context.Bookmarks.IgnoreQueryFilters().FirstOrDefaultAsync(bm => bm.BookmarkId == bookmarkId)
+            var entity = await _context.Bookmark.IgnoreQueryFilters().FirstOrDefaultAsync(bm => bm.BookmarkId == request.BookmarkId)
                 ?? throw new HbrException("Nem létező könyvjelző!");
+
+            if (entity.UserIdentifier != userIdentifier)
+                throw new HbrException("Csak csaját könyvjelzőt lehet törölni!");
 
             entity.Deleted = true;
             entity.LastUpdated = _timeService.UtcNow;
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<BookmarkDto>> GetBookmarksForBook(string bookId, string userIdentifier)
+        public async Task<List<BookmarkDto>> GetBookmarksForBook(GetBookmarksForBookRequest request, string userIdentifier)
         {
-            await CheckIfBookExists(bookId);
+            await CheckIfBookExists(request.BookId);
 
-            var queryResult = await _context.Bookmarks.AsNoTracking().Where(bm => bm.BookId == bookId).ToListAsync();
+            var queryResult = await _context.Bookmark.AsNoTracking().Where(bm => bm.BookId == request.BookId).ToListAsync();
 
             var bookmarkList = _mapper.Map<List<BookmarkDto>>(queryResult);
             return bookmarkList;
@@ -63,7 +66,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<BookmarkDto>> GetMissingBookmarks(GetMissingRequest request, string userIdentifier)
         {
-            var missingBookmarks = await _context.Bookmarks
+            var missingBookmarks = await _context.Bookmark
                 .Where(bm => bm.UserIdentifier == userIdentifier)
                 .Where(bm => !request.IdList.Contains(bm.BookmarkId)).ToListAsync();
 
@@ -72,7 +75,7 @@ namespace BLL.Services.Implementation
 
         private async Task CheckIfBookExists(string bookId)
         {
-            var bookExists = await _context.Books.AsNoTracking().AnyAsync(b => b.BookId == bookId);
+            var bookExists = await _context.Book.AsNoTracking().AnyAsync(b => b.BookId == bookId);
             if (!bookExists)
                 throw new HbrException("Ilyen azonosítójú könyv nem létezik!");
         }

@@ -69,10 +69,10 @@ namespace BLL.Services.Implementation
             entity.Extension = "pdf";
             entity.UploaderIdentifier = userIdentifier;
 
-            await _context.Books.AddAsync(entity);
+            await _context.Book.AddAsync(entity);
             await _context.SaveChangesAsync();
 
-            var newEntity = await _context.Books
+            var newEntity = await _context.Book
                 .Include(b => b.Genre)
                 .Include(b => b.Bookmarks)
                 .AsNoTracking()
@@ -83,7 +83,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<BookDto>> BulkUpdate(List<AddOrEditBookRequest> requestList, string userIdentifier)
         {
-            var entitiesToUpdate = await _context.Books
+            var entitiesToUpdate = await _context.Book
                 .Where(b => requestList.Any(r => r.BookId == b.BookId))
                 .Include(b => b.Genre)
                 .Include(b => b.Bookmarks)
@@ -111,10 +111,10 @@ namespace BLL.Services.Implementation
                 entity.LastUpdated = _timeService.UtcNow;
                 entity.Extension = "pdf";
             }
-            await _context.Books.AddRangeAsync(entitiesToInsert);
+            await _context.Book.AddRangeAsync(entitiesToInsert);
             await _context.SaveChangesAsync();
 
-            var insertedEntityList = _context.Books
+            var insertedEntityList = _context.Book
                 .AsNoTracking()
                 .Include(b => b.Bookmarks)
                 .Include(b => b.Genre)
@@ -127,10 +127,10 @@ namespace BLL.Services.Implementation
             return updatedDtoList;
         }
 
-        public async Task DeleteBookById(string bookId, string userIdentifier)
+        public async Task DeleteBookById(DeleteBookByIdRequest request, string userIdentifier)
         {
             //ignore the queryfilters to aviod unnecessarry errors upon multiple deletion request on the same book
-            var entity = await _context.Books.IgnoreQueryFilters().FirstOrDefaultAsync(book => book.BookId == bookId)
+            var entity = await _context.Book.IgnoreQueryFilters().FirstOrDefaultAsync(book => book.BookId == request.BookId)
                 ?? throw new HbrException("Ismeretlen BookId");
 
             entity.Deleted = true;
@@ -139,14 +139,13 @@ namespace BLL.Services.Implementation
             await _context.SaveChangesAsync();
         }
 
-        public async Task<BookHeaderDto> FindBookByIsbn(string isbn, string userIdentifier)
+        public async Task<BookHeaderDto> FindBookByIsbn(string isbn)
         {
             return await _goodReadsService.FindBookByIsbn(isbn);
         }
 
         public async Task<List<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier)
         {
-            //TODO user query
             var missingBooks = await _context.UserBooks
                 .AsNoTracking()
                 .Where(ub => ub.UserIdentifier == userIdentifier)
@@ -174,7 +173,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<BookDto>> QueryBooks(QueryBooksRequest request)
         {
-            var bookQuery = _context.Books
+            var bookQuery = _context.Book
                 .Include(b => b.Genre)
                 .AsNoTracking();
 
@@ -200,7 +199,7 @@ namespace BLL.Services.Implementation
         public async Task<BookDto> UpdateBook(AddOrEditBookRequest request, string userIdentifier)
         {
 
-            var entity = await _context.Books
+            var entity = await _context.Book
                 .Include(b => b.Genre)
                 .Include(b => b.Bookmarks)
                 .FirstOrDefaultAsync(b => b.BookId == request.BookId)
@@ -247,7 +246,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<BookDto>> GetBooksByUploader(string userIdentifier)
         {
-            var entities = await _context.Books.AsNoTracking().Where(b => b.UploaderIdentifier == userIdentifier).ToListAsync();
+            var entities = await _context.Book.AsNoTracking().Where(b => b.UploaderIdentifier == userIdentifier).ToListAsync();
 
             return _mapper.Map<List<BookDto>>(entities);
         }

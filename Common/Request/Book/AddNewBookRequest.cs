@@ -1,6 +1,6 @@
 ﻿namespace Common.Request
 {
-    public class AddOrEditBookRequest
+    public class AddOrEditBookRequest : RequestBase
     {
         public string BookId { get; set; }
 

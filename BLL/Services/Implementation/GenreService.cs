@@ -23,7 +23,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<GenreDto>> GetAllGenres()
         {
-            var queryResult = await _context.Genres.AsNoTracking().ToListAsync();
+            var queryResult = await _context.Genre.AsNoTracking().ToListAsync();
             var genreList = _mapper.Map<List<GenreDto>>(queryResult);
 
             return genreList;

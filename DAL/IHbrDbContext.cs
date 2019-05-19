@@ -9,9 +9,12 @@ namespace DAL
     {
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
 
-        DbSet<Book> Books { get; set; }
-        DbSet<Bookmark> Bookmarks { get; set; }
-        DbSet<Genre> Genres { get; set; }
+        DbSet<Book> Book { get; set; }
+        DbSet<Bookmark> Bookmark { get; set; }
+        DbSet<Genre> Genre { get; set; }
         DbSet<UserBook> UserBooks { get; set; }
+        #region tmp ki lesz veve
+        DbSet<User> User { get; set; }
+        #endregion
     }
 }

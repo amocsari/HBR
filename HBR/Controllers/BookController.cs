@@ -3,9 +3,9 @@ using Common.Dto;
 using Common.Request;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HBR.Controllers
@@ -30,49 +30,75 @@ namespace HBR.Controllers
         [HttpGet]
         public Task<BookHeaderDto> FindBookByIsbn(string isbn)
         {
-            return _bookService.FindBookByIsbn(isbn, UserId);
+            return _bookService.FindBookByIsbn(isbn);
         }
 
         [HttpDelete]
-        public Task DeleteBookById(string bookId)
+        public Task DeleteBookById(DeleteBookByIdRequest request)
         {
-            return _bookService.DeleteBookById(bookId, UserId);
+            //return _bookService.DeleteBookById(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.DeleteBookById(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpPost]
         public Task AddBookToShelf([FromBody]AddBookToShelfRequest request)
         {
-            return _bookService.AddBookToShelf(request, UserId);
+            //return _bookService.AddBookToShelf(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.AddBookToShelf(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpPost]
         public Task UpdateBookProgress([FromBody]UpdateBookProgressRequest request)
         {
-            return _bookService.UpdateProgress(request, UserId);
+            //return _bookService.UpdateProgress(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.UpdateProgress(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpPost]
         public Task<BookDto> AddNewBook([FromBody]AddOrEditBookRequest request)
         {
-            return _bookService.AddNewBook(request, UserId);
+            //return _bookService.AddNewBook(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.AddNewBook(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpPost]
         public Task<BookDto> UpdateBook([FromBody]AddOrEditBookRequest request)
         {
-            return _bookService.UpdateBook(request, UserId);
+            //return _bookService.UpdateBook(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.UpdateBook(request, request.UserIdentifier);
+            #endregion
         }
 
+        //[HttpGet]
+        //public Task<List<BookDto>> GetMyBooks()
+        //{
+        //    return _bookService.GetBooksByUser(UserId);
+        //}
+
+        #region tmp ki lesz veve
         [HttpGet]
-        public Task<List<BookDto>> GetMyBooks()
+        public Task<List<BookDto>> GetMyBooks(string userIdentifier)
         {
-            return _bookService.GetBooksByUser(UserId);
+            return _bookService.GetBooksByUser(userIdentifier);
         }
+        #endregion
 
         [HttpPost]
         public Task<List<BookDto>> GetMissingBooks([FromBody]GetMissingRequest request)
         {
-            return _bookService.GetMissingBooks(request, UserId);
+            //return _bookService.GetMissingBooks(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.GetMissingBooks(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpGet]
@@ -99,7 +125,10 @@ namespace HBR.Controllers
         [HttpPost]
         public Task<List<BookDto>> BulkUpdateBooks([FromBody]List<AddOrEditBookRequest> requestList)
         {
-            return _bookService.BulkUpdate(requestList, UserId);
+            //return _bookService.BulkUpdate(requestList, UserId);
+            #region tmp ki lesz veve
+            return _bookService.BulkUpdate(requestList, requestList.First().UserIdentifier);
+            #endregion
         }
     }
 }
