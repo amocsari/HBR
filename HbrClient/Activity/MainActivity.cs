@@ -118,7 +118,7 @@ namespace HbrClient
                 HbrApplication.UserIdentifier = await result.Content.ReadAsStringAsync();
             }
             await SynchronizeWithServer();
-            var localBooks = _database.SelectTable<BookDto>();
+            var localBooks = _database.SelectTable<ClientBookDto>();
             mAdapter.AddBooks(localBooks);
             #endregion
 
@@ -191,11 +191,11 @@ namespace HbrClient
 
                         if (!string.IsNullOrEmpty(bookXml))
                         {
-                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
+                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
                             StringReader sr = new StringReader(bookXml);
                             try
                             {
-                                var book = (BookDto)xmlSerializer.Deserialize(sr);
+                                var book = (ClientBookDto)xmlSerializer.Deserialize(sr);
 
                                 if (string.IsNullOrEmpty(book.BookId))
                                 {
@@ -223,9 +223,9 @@ namespace HbrClient
 
                                                 if (response.IsSuccessStatusCode)
                                                 {
-                                                    var returnedBook = await response.Content.ReadAsAsync<BookDto>();
+                                                    var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
 
-                                                    mAdapter.AddBooks(new List<BookDto> { returnedBook });
+                                                    mAdapter.AddBooks(new List<ClientBookDto> { returnedBook });
                                                 }
                                             }
                                             catch (Exception e)
@@ -235,7 +235,7 @@ namespace HbrClient
                                     }
                                     else
                                     {
-                                        mAdapter.AddBooks(new List<BookDto> { book });
+                                        mAdapter.AddBooks(new List<ClientBookDto> { book });
                                     }
 
                                     _database.AddElement(book);
@@ -266,7 +266,7 @@ namespace HbrClient
 
                                                 if (response.IsSuccessStatusCode)
                                                 {
-                                                    var returnedBook = await response.Content.ReadAsAsync<BookDto>();
+                                                    var returnedBook = await response.Content.ReadAsAsync<ClientBookDto>();
 
                                                     mAdapter.UpdateBook(returnedBook);
                                                 }
@@ -279,7 +279,7 @@ namespace HbrClient
                                     }
                                     else
                                     {
-                                        mAdapter.AddBooks(new List<BookDto> { book });
+                                        mAdapter.AddBooks(new List<ClientBookDto> { book });
                                     }
 
                                     _database.AddElement(book);
@@ -375,7 +375,7 @@ namespace HbrClient
         {
             using (var client = new HttpClient())
             {
-                var localBookList = _database.SelectTable<BookDto>();
+                var localBookList = _database.SelectTable<ClientBookDto>();
                 var localBookIdList = localBookList.Select(lb => lb.BookId).ToList();
 
                 var request = new GetMissingRequest
@@ -390,7 +390,7 @@ namespace HbrClient
                 if (!result.IsSuccessStatusCode)
                     return;
 
-                var response = await result.Content.ReadAsAsync<GetMissingResponse<BookDto>>();
+                var response = await result.Content.ReadAsAsync<GetMissingResponse<ClientBookDto>>();
                 _database.AddElements(response.RemoteDtoList);
 
                 var booksToSend = localBookList
@@ -415,7 +415,7 @@ namespace HbrClient
         {
             using (var client = new HttpClient())
             {
-                var localBookmarkList = _database.SelectTable<BookmarkDto>();
+                var localBookmarkList = _database.SelectTable<ClientBookmarkDto>();
                 var localBookmarkIdList = localBookmarkList.Select(lbm => lbm.BookmarkId).ToList();
 
                 var request = new GetMissingRequest
@@ -430,7 +430,7 @@ namespace HbrClient
                 if (!result.IsSuccessStatusCode)
                     return;
 
-                var response = await result.Content.ReadAsAsync<GetMissingResponse<BookmarkDto>>();
+                var response = await result.Content.ReadAsAsync<GetMissingResponse<ClientBookmarkDto>>();
                 _database.AddElements(response.RemoteDtoList);
 
                 var bookmarksToSend = localBookmarkList

@@ -13,14 +13,14 @@ namespace HbrClient.BookQuery
 {
     class BookQueryAdapter : Adapter
     {
-        public List<BookDto> QueryResult { get; set; }
+        public List<ClientBookDto> QueryResult { get; set; }
         public Context Context { get; set; }
         public RecyclerView RecyclerView { get; set; }
         private Database _database;
 
         public BookQueryAdapter()
         {
-            QueryResult = new List<BookDto>();
+            QueryResult = new List<ClientBookDto>();
             _database = Database.Instance;
         }
         public override int ItemCount => QueryResult.Count;
@@ -80,10 +80,10 @@ namespace HbrClient.BookQuery
             }
         }
 
-        public void AddBooks(List<BookDto> dto)
+        public void AddBooks(List<ClientBookDto> dto)
         {
             if (QueryResult == null)
-                QueryResult = new List<BookDto>();
+                QueryResult = new List<ClientBookDto>();
 
             QueryResult.AddRange(dto);
             NotifyDataSetChanged();

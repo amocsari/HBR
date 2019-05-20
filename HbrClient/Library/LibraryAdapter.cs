@@ -17,12 +17,12 @@ namespace HbrClient.Library
 {
     public class LibraryAdapter : Adapter
     {
-        public List<BookDto> Library { get; set; }
+        public List<ClientBookDto> Library { get; set; }
         public Context Context { get; set; }
         public RecyclerView RecyclerView { get; set; }
         Database _database;
 
-        public LibraryAdapter(List<BookDto> library, Context context)
+        public LibraryAdapter(List<ClientBookDto> library, Context context)
         {
             Library = library;
             Context = context;
@@ -30,7 +30,7 @@ namespace HbrClient.Library
 
         public LibraryAdapter()
         {
-            Library = new List<BookDto>();
+            Library = new List<ClientBookDto>();
             _database = Database.Instance;
         }
 
@@ -105,7 +105,7 @@ namespace HbrClient.Library
                 {
                     var activity = new Intent(Context, typeof(BookDetailActivity));
                     var dto = Library[position];
-                    XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
+                    XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
                     StringWriter sw = new StringWriter();
                     xmlSerializer.Serialize(sw, dto);
                     activity.PutExtra("book", sw.ToString());
@@ -162,16 +162,16 @@ namespace HbrClient.Library
             popup.Show();
         }
 
-        public void AddBooks(List<BookDto> dto)
+        public void AddBooks(List<ClientBookDto> dto)
         {
             if (Library == null)
-                Library = new List<BookDto>();
+                Library = new List<ClientBookDto>();
 
             Library.AddRange(dto);
             NotifyDataSetChanged();
         }
 
-        public void UpdateBook(BookDto returnedBook)
+        public void UpdateBook(ClientBookDto returnedBook)
         {
             var oldBook = Library.FirstOrDefault(b => b.BookId == returnedBook.BookId);
             oldBook.Author = returnedBook.Author;

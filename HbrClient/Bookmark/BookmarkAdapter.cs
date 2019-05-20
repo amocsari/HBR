@@ -13,7 +13,7 @@ namespace HbrClient.Bookmark
 {
     public class BookmarkAdapter : Adapter
     {
-        public List<BookmarkDto> Bookmarks { get; set; }
+        public List<ClientBookmarkDto> Bookmarks { get; set; }
         public Context Context { get; set; }
         public RecyclerView RecyclerView { get; set; }
 
@@ -21,10 +21,10 @@ namespace HbrClient.Bookmark
 
         public BookmarkAdapter()
         {
-            Bookmarks = new List<BookmarkDto>();
+            Bookmarks = new List<ClientBookmarkDto>();
         }
 
-        public BookmarkAdapter(List<BookmarkDto> bookmarks)
+        public BookmarkAdapter(List<ClientBookmarkDto> bookmarks)
         {
             Bookmarks = bookmarks;
         }
@@ -87,7 +87,7 @@ namespace HbrClient.Bookmark
             }
         }
 
-        public void AddBookmark(List<BookmarkDto> dtoList)
+        public void AddBookmark(List<ClientBookmarkDto> dtoList)
         {
             Bookmarks.AddRange(dtoList);
             NotifyDataSetChanged();

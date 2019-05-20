@@ -10,8 +10,6 @@ namespace HbrClient.Model.Dto
         
         public int PageNumber { get; set; }
 
-        public string UserIdentifier { get; set; }
-
         public DateTime LastUpdated { get; set; }
     }
 }

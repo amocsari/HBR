@@ -24,7 +24,7 @@ namespace HbrClient
     {
         public const int RequestCode = 1;
 
-        BookDto Dto { get; set; }
+        ClientBookDto Dto { get; set; }
         BookmarkAdapter BookmarkAdapter { get; set; }
         TextView AuthorTextView { get; set; }
         TextView TitleTextView { get; set; }
@@ -46,13 +46,13 @@ namespace HbrClient
 
             if (!string.IsNullOrEmpty(extra))
             {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
                 StringReader sr = new StringReader(extra);
-                Dto = (BookDto)xmlSerializer.Deserialize(sr);
+                Dto = (ClientBookDto)xmlSerializer.Deserialize(sr);
             }
             else
             {
-                Dto = new BookDto();
+                Dto = new ClientBookDto();
             }
 
             AuthorTextView = FindViewById<TextView>(Resource.Id.text_view_book_author);
@@ -185,12 +185,15 @@ namespace HbrClient
 
                     using (var client = new HttpClient())
                     {
-                        var bookmark = new BookmarkDto
+                        var bookmark = new ClientBookmarkDto
                         {
                             BookId = Dto.BookId,
                             PageNumber = pageNumber,
                             BookmarkId = new Guid().ToString(),
-                            LastUpdated = DateTime.Now
+                            LastUpdated = DateTime.Now,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
                         };
 
                         var request = new AddBookmarkRequest
@@ -207,7 +210,7 @@ namespace HbrClient
 
                         if (response.IsSuccessStatusCode)
                         {
-                            BookmarkAdapter.AddBookmark(new List<BookmarkDto> { bookmark });
+                            BookmarkAdapter.AddBookmark(new List<ClientBookmarkDto> { bookmark });
                         }
                         else
                         {
@@ -265,7 +268,7 @@ namespace HbrClient
 
             SetResult(Result.Ok, returnIntent);
 
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(BookDto));
+            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
             StringWriter sw = new StringWriter();
             xmlSerializer.Serialize(sw, Dto);
             returnIntent.PutExtra("book", sw.ToString());
@@ -301,7 +304,7 @@ namespace HbrClient
                             response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook", request);
                             if (response.IsSuccessStatusCode)
                             {
-                                var bookmarkList = await response.Content.ReadAsAsync<List<BookmarkDto>>();
+                                var bookmarkList = await response.Content.ReadAsAsync<List<ClientBookmarkDto>>();
                                 Dto.Bookmarks = bookmarkList;
                             }
                         }

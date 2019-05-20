@@ -87,7 +87,9 @@
     <Compile Include="Library\LibraryAdapter.cs" />
     <Compile Include="Model\Dto\BookDto.cs" />
     <Compile Include="Model\Dto\BookHeaderDto.cs" />
+    <Compile Include="Model\Dto\ClientBookDto.cs" />
     <Compile Include="Model\Dto\BookmarkDto.cs" />
+    <Compile Include="Model\Dto\ClientBookmarkDto.cs" />
     <Compile Include="Model\Dto\GenreDto.cs" />
     <Compile Include="Model\Request\Bookmark\AddBookmarkRequest.cs" />
     <Compile Include="Model\Request\Bookmark\DeleteBookmarkRequest.cs" />

@@ -53,7 +53,7 @@ namespace HbrClient
             TitleQuery = string.Empty;
         }
 
-        private async Task<List<BookDto>> QueryBooksFromServerAsync()
+        private async Task<List<ClientBookDto>> QueryBooksFromServerAsync()
         {
             using (var client = new HttpClient())
             using (var dialog = UserDialogs.Instance.Loading("Loading"))
@@ -78,10 +78,10 @@ namespace HbrClient
                     };
                     await UserDialogs.Instance.AlertAsync(config);
                     Finish();
-                    return new List<BookDto>();
+                    return new List<ClientBookDto>();
                 }
 
-                return await result.Content.ReadAsAsync<List<BookDto>>();
+                return await result.Content.ReadAsAsync<List<ClientBookDto>>();
             }
         }
 

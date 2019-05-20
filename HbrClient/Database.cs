@@ -35,8 +35,8 @@ namespace HbrClient
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    var a = connection.CreateTable<BookDto>();
-                    var b = connection.CreateTable<BookmarkDto>();
+                    var a = connection.CreateTable<ClientBookDto>();
+                    var b = connection.CreateTable<ClientBookmarkDto>();
                     var c = connection.CreateTable<GenreDto>();
                     return true;
                 }
@@ -115,13 +115,13 @@ namespace HbrClient
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    if (item is BookDto book)
+                    if (item is ClientBookDto book)
                     {
                         connection.Query<T>("UPDATE BookDto set Isbn=?, Title=?, Author=?, PageNumber=?, GenreId=?, LastUpdated=? Where BookId=?", book.Isbn, book.Title, book.Author, book.PageNumber, book.GenreId, book.LastUpdated, book.BookId);
                     }
-                    else if (item is BookmarkDto bookmark)
+                    else if (item is ClientBookmarkDto bookmark)
                     {
-                        connection.Query<T>("UPDATE BookmarkDto set BookId=?, PageNumber=?, UserIdentifier=?, LastUpdated=? Where BookmarkId=?", bookmark.BookId, bookmark.PageNumber, bookmark.UserIdentifier, bookmark.LastUpdated, bookmark.BookmarkId);
+                        connection.Query<T>("UPDATE BookmarkDto set BookId=?, PageNumber=?, LastUpdated=? Where BookmarkId=?", bookmark.BookId, bookmark.PageNumber, bookmark.LastUpdated, bookmark.BookmarkId);
                     }
                     else if (item is GenreDto genre)
                     {

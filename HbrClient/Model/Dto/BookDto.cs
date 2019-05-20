@@ -21,7 +21,7 @@ namespace HbrClient.Model.Dto
         public DateTime LastUpdated { get; set; }
 
         [Ignore]
-        public List<BookmarkDto> Bookmarks { get; set; }
+        public List<ClientBookmarkDto> Bookmarks { get; set; }
         [Ignore]
         public GenreDto Genre { get; set; }
     }
