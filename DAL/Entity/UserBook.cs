@@ -7,6 +7,8 @@ namespace DAL.Entity
     [Table("UserBook")]
     public class UserBook
     {
+        [Key]
+        public int UserBookId { get; set; }
         [Required]
         [ForeignKey("Book")]
         public string BookId { get; set; }

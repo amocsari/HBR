@@ -32,7 +32,6 @@ namespace HbrClient.BookQuery
             var queryBookViewHolder = holder as QueryBookViewHolder;
             queryBookViewHolder.AuthorTextView.Text = QueryResult[position].Author;
             queryBookViewHolder.TitleTextView.Text = QueryResult[position].Title;
-            queryBookViewHolder.ItemView.Click += OnClick;
         }
 
         public override ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -40,47 +39,9 @@ namespace HbrClient.BookQuery
             var libraryItemView = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.view_library_item, parent, false);
 
             QueryBookViewHolder queryBookViewHolder = new QueryBookViewHolder(libraryItemView);
-
+            queryBookViewHolder.Adapter = this;
+            queryBookViewHolder.RecyclerView = RecyclerView;
             return queryBookViewHolder;
-        }
-
-        private async void OnClick(object sender, EventArgs e)
-        {
-            var config = new ConfirmConfig
-            {
-                CancelText = "Mégse",
-                OkText = "Igen",
-                Title = "Könyv felvétele",
-                Message = "Felveszi ezt a könyvet a személyet polcára?"
-            };
-            var result = await UserDialogs.Instance.ConfirmAsync(config);
-
-            if (!result)
-                return;
-
-            using (var client = new HttpClient())
-            {
-                var dialog = UserDialogs.Instance.Loading("Loading");
-                var view = (View)sender;
-                var position = RecyclerView.GetChildAdapterPosition(view);
-                var book = QueryResult[position];
-
-                var request = new AddBookToShelfRequest
-                {
-                    BookId = book.BookId,
-                    Progress = 1,
-                    #region tmp ki lesz veve
-                    UserIdentifier = HbrApplication.UserIdentifier,
-                    #endregion
-                };
-                await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addbooktoshelf", request);
-
-                _database.AddElement(book);
-
-                QueryResult.RemoveAt(position);
-                NotifyDataSetChanged();
-                dialog.Dispose();
-            }
         }
 
         public void AddBooks(List<ClientBookDto> dto)

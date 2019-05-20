@@ -106,13 +106,22 @@ namespace BLL.Services.Implementation
                 .Where(b => !entitiesToUpdate.Any(e => e.BookId == b.BookId))
                 .ToList();
             var entitiesToInsert = _mapper.Map<List<Book>>(requestsToInsert);
+            var userBooksToInsert = entitiesToInsert
+                .Select(e => new UserBook
+                {
+                    BookId = e.BookId,
+                    Progress = 0,
+                    UserIdentifier = userIdentifier,
+                });
 
             foreach (var entity in entitiesToInsert)
             {
                 entity.LastUpdated = _timeService.UtcNow;
                 entity.Extension = "pdf";
+                entity.UploaderIdentifier = userIdentifier;
             }
             await _context.Book.AddRangeAsync(entitiesToInsert);
+            await _context.UserBooks.AddRangeAsync(userBooksToInsert);
             await _context.SaveChangesAsync();
 
             var insertedEntityList = _context.Book
@@ -191,9 +200,7 @@ namespace BLL.Services.Implementation
 
         public async Task<List<BookDto>> QueryBooks(QueryBooksRequest request, string userIdentifier)
         {
-            var bookQuery = _context.UserBooks
-                .Where(ub => ub.UserIdentifier != userIdentifier)
-                .Select(ub => ub.Book)
+            var bookQuery = _context.Book
                 .Include(b => b.Genre)
                 .AsNoTracking();
 

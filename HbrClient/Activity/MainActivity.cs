@@ -211,6 +211,12 @@ namespace HbrClient
             //intent.SetType("application/pdf");
             //StartActivityForResult(intent, get_file_request_code);
 
+            if (string.IsNullOrEmpty(HbrApplication.UserIdentifier))
+            {
+                await UserDialogs.Instance.AlertAsync("Az alkalmazás használatához be kell jelentkezni!", "Kijelentkezve");
+                return;
+            }
+
             StartActivityForResult(new Intent(this, typeof(BookDetailActivity)), BookDetailActivity.RequestCode);
         }
 
@@ -235,6 +241,7 @@ namespace HbrClient
 
                                 if (string.IsNullOrEmpty(book.BookId))
                                 {
+                                    book.BookId = Guid.NewGuid().ToString();
                                     if (CheckInternetConnection())
                                     {
                                         using (var client = new HttpClient())
@@ -243,7 +250,7 @@ namespace HbrClient
                                             {
                                                 var request = new AddOrEditBookRequest
                                                 {
-                                                    BookId = new Guid().ToString(),
+                                                    BookId = Guid.NewGuid().ToString(),
                                                     Author = book.Author,
                                                     GenreId = book.GenreId,
                                                     Isbn = book.Isbn,
@@ -424,6 +431,8 @@ namespace HbrClient
                         UserIdentifier = HbrApplication.UserIdentifier
                         #endregion
                     }).ToList();
+
+                result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/bulkupdatebooks", booksToSend);
             }
         }
 

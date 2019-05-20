@@ -22,9 +22,6 @@ namespace DAL
             modelBuilder.Entity<Bookmark>()
                 .HasQueryFilter(book => book.Deleted == false);
 
-            modelBuilder.Entity<UserBook>()
-                .HasKey(c => new { c.BookId, c.UserIdentifier });
-
             #region tmp ki lesz veve
             modelBuilder.Entity<User>()
                 .HasKey(c => new { c.UserName, c.Password });
