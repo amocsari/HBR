@@ -79,6 +79,7 @@ namespace HbrClient
         {
             await SynchronizeWithServer();
             var localBooks = _database.SelectTable<ClientBookDto>();
+            mAdapter.Clear();
             mAdapter.AddBooks(localBooks);
         }
 
@@ -262,7 +263,11 @@ namespace HbrClient
                                                     #endregion
                                                 };
 
-                                                await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addnewbook", request);
+                                                var result = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addnewbook", request);
+                                                if (result.IsSuccessStatusCode)
+                                                {
+                                                    book = await result.Content.ReadAsAsync<ClientBookDto>();
+                                                }
                                             }
                                             catch (Exception e)
                                             {
@@ -351,6 +356,9 @@ namespace HbrClient
 
             if ((int)resultCode == sign_in_response_code)
                 AuthenticationContinuationHelper.SetAuthenticationContinuationEventArgs(requestCode, resultCode, data);
+
+            if (CheckInternetConnection())
+                await Refresh();
         }
 
         private void OpenPfd(byte[] bytes)
