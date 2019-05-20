@@ -99,6 +99,7 @@
     <Compile Include="Model\Request\Book\AddOrEditBookRequest.cs" />
     <Compile Include="Model\Request\Book\DeleteBookByIdRequest.cs" />
     <Compile Include="Model\Request\Book\QueryBooksRequest.cs" />
+    <Compile Include="Model\Request\Book\RemoveFromShelfRequest.cs" />
     <Compile Include="Model\Request\Book\UpdateBookProgressRequest.cs" />
     <Compile Include="Model\Request\GetMissingRequest.cs" />
     <Compile Include="Model\Request\LoginRequest.cs" />

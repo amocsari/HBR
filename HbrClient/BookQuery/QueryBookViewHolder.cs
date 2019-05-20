@@ -8,7 +8,6 @@ namespace HbrClient.BookQuery
     {
         public TextView TitleTextView { get; set; }
         public TextView AuthorTextView { get; set; }
-        public int BookId { get; set; }
 
         public QueryBookViewHolder(View view) : base(view)
         {

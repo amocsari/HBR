@@ -12,6 +12,11 @@
       android:title="Oldalszám módosítás"
       app:showAsAction="never" />
   <item
+      android:id="@+id/menuItem_libraryItem_removeFromShelf"
+      android:orderInCategory="100"
+      android:title="Levétel a polcról"
+      app:showAsAction="never" />
+  <item
       android:id="@+id/menuItem_libraryItem_delete"
       android:orderInCategory="100"
       android:title="Törlés"

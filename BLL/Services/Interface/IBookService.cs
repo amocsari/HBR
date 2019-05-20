@@ -28,5 +28,6 @@ namespace BLL.Services.Interface
         Task<GetMissingResponse<BookDto>> GetMissingBooks(GetMissingRequest request, string userIdentifier);
 
         Task<List<BookDto>> BulkUpdate(List<AddOrEditBookRequest> requestList, string userIdentifier);
+        Task RemoveFromShelf(RemoveFromShelfRequest request, string userIdentifier);
     }
 }

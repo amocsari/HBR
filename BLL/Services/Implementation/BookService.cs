@@ -270,5 +270,15 @@ namespace BLL.Services.Implementation
 
             return _mapper.Map<List<BookDto>>(entities);
         }
+
+        public async Task RemoveFromShelf(RemoveFromShelfRequest request, string userIdentifier)
+        {
+            var entity = await _context.UserBooks
+                .FirstOrDefaultAsync(ub => ub.BookId == request.BookId && ub.UserIdentifier == userIdentifier);
+
+            entity.Deleted = true;
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

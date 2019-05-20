@@ -150,10 +150,46 @@ namespace HbrClient.Library
                         var dialog = UserDialogs.Instance.Loading("Loading");
                         using (var client = new HttpClient())
                         {
-                            var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/UpdateBookProgress", request);
-                            if (response.IsSuccessStatusCode)
-                                Library[position].PageNumber = request.NewProgress;
+                            await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Book/UpdateBookProgress", request);
                         }
+
+                        Library[position].PageNumber = request.NewProgress;
+                        dialog.Dispose();
+                    }
+                }
+                else if (argument.Item.ItemId == Resource.Id.menuItem_libraryItem_removeFromShelf)
+                {
+                    var config = new ConfirmConfig
+                    {
+                        Title = "Levétel megerősítése",
+                        Message = "Biztosan leveszi ezt a könyvet a listájáról?",
+                        OkText = "Igen",
+                        CancelText = "Mégse"
+                    };
+                    var result = await UserDialogs.Instance.ConfirmAsync(config);
+
+                    if (result)
+                    {
+                        var dialog = UserDialogs.Instance.Loading("Loading");
+
+                        var book = Library[position];
+
+                        var request = new RemoveFromShelfRequest
+                        {
+                            BookId = book.BookId,
+                            #region tmp ki lesz veve
+                            UserIdentifier = HbrApplication.UserIdentifier
+                            #endregion
+                        };
+
+                        using (var client = new HttpClient())
+                        {
+                            var response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Book/RemoveFromShelf", request);
+                        }
+
+                        _database.RemoveTable(book);
+                        Library.RemoveAt(position);
+                        NotifyDataSetChanged();
 
                         dialog.Dispose();
                     }

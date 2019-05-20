@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using Acr.UserDialogs;
+using Android.App;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
@@ -11,6 +12,7 @@ using static Android.Support.V7.Widget.RecyclerView;
 
 namespace HbrClient.BookQuery
 {
+    [Activity(ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
     class BookQueryAdapter : Adapter
     {
         public List<ClientBookDto> QueryResult { get; set; }
@@ -66,7 +68,7 @@ namespace HbrClient.BookQuery
                 var request = new AddBookToShelfRequest
                 {
                     BookId = book.BookId,
-                    Progress = 0,
+                    Progress = 1,
                     #region tmp ki lesz veve
                     UserIdentifier = HbrApplication.UserIdentifier,
                     #endregion

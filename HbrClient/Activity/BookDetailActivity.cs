@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace HbrClient
@@ -25,7 +24,7 @@ namespace HbrClient
         public const int RequestCode = 1;
 
         ClientBookDto Dto { get; set; }
-        BookmarkAdapter BookmarkAdapter { get; set; }
+        BookmarkAdapter BookmarkAdapter { get; set; } = new BookmarkAdapter();
         TextView AuthorTextView { get; set; }
         TextView TitleTextView { get; set; }
         TextView IsbnTextView { get; set; }
@@ -34,26 +33,13 @@ namespace HbrClient
 
         Database _database;
 
-        protected override async void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_book_data_edit);
 
             _database = Database.Instance;
-
-            var extra = Intent.GetStringExtra("book");
-
-            if (!string.IsNullOrEmpty(extra))
-            {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
-                StringReader sr = new StringReader(extra);
-                Dto = (ClientBookDto)xmlSerializer.Deserialize(sr);
-            }
-            else
-            {
-                Dto = new ClientBookDto();
-            }
 
             AuthorTextView = FindViewById<TextView>(Resource.Id.text_view_book_author);
             var authorEditImageButton = FindViewById<ImageButton>(Resource.Id.image_button_edit_author);
@@ -76,20 +62,35 @@ namespace HbrClient
             titleEditImageButton.Click += OnTitleEditImageButtonClick;
             isbnEditImageButton.Click += OnIsbnEditImageButtonClick;
 
-            await InitializeAsync();
+            var dialog = UserDialogs.Instance.Loading("Loading");
+
+            var extra = Intent.GetStringExtra("book");
+            if (!string.IsNullOrEmpty(extra))
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(ClientBookDto));
+                StringReader sr = new StringReader(extra);
+                Dto = (ClientBookDto)xmlSerializer.Deserialize(sr);
+                var bookmarkList = _database.SelectTable<ClientBookmarkDto>().Where(bm => bm.BookId == Dto.BookId).ToList();
+                BookmarkAdapter.AddBookmark(bookmarkList);
+            }
+            else
+            {
+                Dto = new ClientBookDto();
+            }
+
+            GenreList = _database.GetGenres();
 
             var adapter = new ArrayAdapter<string>(this, Resource.Layout.support_simple_spinner_dropdown_item, GenreList.Select(g => g.GenreName).ToList());
             GenreSpinner.Adapter = adapter;
             GenreSpinner.ItemSelected += OnGenreSpinnerItemSelected;
 
-            if (Dto.Genre == null)
+            if (string.IsNullOrEmpty(Dto.GenreId))
             {
                 Dto.Genre = GenreList.FirstOrDefault();
                 Dto.GenreId = Dto.Genre.GenreId;
             }
             GenreSpinner.SetSelection(GenreList.IndexOf(Dto.Genre));
 
-            BookmarkAdapter = Dto.Bookmarks != null ? new BookmarkAdapter(Dto.Bookmarks) : new BookmarkAdapter();
             BookmarkAdapter.RecyclerView = bookmarkRecyclerView;
             bookmarkRecyclerView.SetAdapter(BookmarkAdapter);
             bookmarkRecyclerView.SetLayoutManager(new LinearLayoutManager(this));
@@ -98,6 +99,8 @@ namespace HbrClient
             AuthorTextView.Text = Dto.Author;
             TitleTextView.Text = Dto.Title;
             IsbnTextView.Text = Dto.Isbn;
+
+            dialog.Dispose();
         }
 
         private void OnGenreSpinnerItemSelected(object sender, AdapterView.ItemSelectedEventArgs e)
@@ -206,16 +209,11 @@ namespace HbrClient
                             #endregion
                         };
 
-                        var response = await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/AddBookmark", request);
+                        if (CheckInternetConnection())
+                            await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/Bookmark/AddBookmark", request);
 
-                        if (response.IsSuccessStatusCode)
-                        {
-                            BookmarkAdapter.AddBookmark(new List<ClientBookmarkDto> { bookmark });
-                        }
-                        else
-                        {
-
-                        }
+                        BookmarkAdapter.AddBookmark(new List<ClientBookmarkDto> { bookmark });
+                        _database.AddElement(bookmark);
                     }
                     dialog.Dispose();
                 }
@@ -274,51 +272,6 @@ namespace HbrClient
             returnIntent.PutExtra("book", sw.ToString());
 
             Finish();
-        }
-
-        private async Task InitializeAsync()
-        {
-            var dialog = UserDialogs.Instance.Loading("Loading");
-            if (CheckInternetConnection())
-            {
-                using (var client = new HttpClient())
-                {
-                    try
-                    {
-                        var response = await client.GetAsync("https://hbr.azurewebsites.net/api/Genre/GetAllGenres");
-
-                        if (response.IsSuccessStatusCode)
-                        {
-                            GenreList = await response.Content.ReadAsAsync<List<GenreDto>>();
-                        }
-
-                        if (!string.IsNullOrEmpty(Dto.BookId))
-                        {
-                            var request = new GetBookmarksForBookRequest
-                            {
-                                BookId = Dto.BookId,
-                                #region tmp ki lesz veve
-                                UserIdentifier = HbrApplication.UserIdentifier,
-                                #endregion
-                            };
-                            response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Bookmark/GetBookmarksForBook", request);
-                            if (response.IsSuccessStatusCode)
-                            {
-                                var bookmarkList = await response.Content.ReadAsAsync<List<ClientBookmarkDto>>();
-                                Dto.Bookmarks = bookmarkList;
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                }
-            }
-            else
-            {
-                GenreList = _database.GetGenres().ToList();
-            }
-            dialog.Dispose();
         }
 
         private bool CheckInternetConnection()

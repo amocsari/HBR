@@ -56,6 +56,15 @@ namespace HBR.Controllers
         }
 
         [HttpPost]
+        public Task RemoveFromShelf([FromBody]RemoveFromShelfRequest request)
+        {
+            //return _bookService.RemoveFromShelf(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.RemoveFromShelf(request, request.UserIdentifier);
+            #endregion
+        }
+
+        [HttpPost]
         public Task UpdateBookProgress([FromBody]UpdateBookProgressRequest request)
         {
             //return _bookService.UpdateProgress(request, UserId);

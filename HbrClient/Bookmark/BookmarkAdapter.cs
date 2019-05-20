@@ -63,10 +63,10 @@ namespace HbrClient.Bookmark
             if (result)
             {
                 var dialog = UserDialogs.Instance.Loading("Loading");
+                var bookmark = Bookmarks[position];
 
                 using (var client = new HttpClient())
                 {
-                    var bookmark = Bookmarks[position];
                     var request = new DeleteBookmarkRequest
                     {
                         BookmarkId = bookmark.BookmarkId,
@@ -76,13 +76,11 @@ namespace HbrClient.Bookmark
                     };
                     var response = await client.PostAsJsonAsync($"https://hbr.azurewebsites.net/api/Bookmark/DeleteBookMark", request);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        Bookmarks.RemoveAt(position);
-                        NotifyDataSetChanged();
-                    }
                 }
 
+                Bookmarks.RemoveAt(position);
+                NotifyDataSetChanged();
+                Database.Instance.RemoveTable(bookmark);
                 dialog.Dispose();
             }
         }
