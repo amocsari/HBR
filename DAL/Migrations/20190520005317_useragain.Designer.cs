@@ -4,14 +4,16 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
 {
     [DbContext(typeof(HbrDbContext))]
-    partial class HbrDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190520005317_useragain")]
+    partial class useragain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +61,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 857, DateTimeKind.Local).AddTicks(6622),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 965, DateTimeKind.Local).AddTicks(4456),
                             PageNumber = 248,
                             Title = "The Fellowship of the Ring",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -71,7 +73,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 857, DateTimeKind.Local).AddTicks(9311),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 965, DateTimeKind.Local).AddTicks(7114),
                             PageNumber = 249,
                             Title = "The Two Towers",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -83,7 +85,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 857, DateTimeKind.Local).AddTicks(9349),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 965, DateTimeKind.Local).AddTicks(7153),
                             PageNumber = 250,
                             Title = "The Return of the King",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -95,7 +97,7 @@ namespace DAL.Migrations
                             Deleted = false,
                             Extension = "pdf",
                             GenreId = "7a4f9a69-3afd-4dae-829a-ae4691a415db",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 857, DateTimeKind.Local).AddTicks(9365),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 965, DateTimeKind.Local).AddTicks(7169),
                             PageNumber = 195,
                             Title = "Rogue One: A Star Wars Story",
                             UploaderIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
@@ -131,7 +133,7 @@ namespace DAL.Migrations
                             BookmarkId = "ad536b7d-08df-48fe-87e4-7253c1c76eac",
                             BookId = "466a182c-dd53-4c27-affb-75fb4ff6e220",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 858, DateTimeKind.Local).AddTicks(2668),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 966, DateTimeKind.Local).AddTicks(431),
                             PageNumber = 25,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
@@ -140,7 +142,7 @@ namespace DAL.Migrations
                             BookmarkId = "bbccd264-fb13-421d-8335-c3267bdeaeea",
                             BookId = "3cfb0d9e-1c37-499d-9271-0dd7b17400d3",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 858, DateTimeKind.Local).AddTicks(4244),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 966, DateTimeKind.Local).AddTicks(2133),
                             PageNumber = 37,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         },
@@ -149,7 +151,7 @@ namespace DAL.Migrations
                             BookmarkId = "74762732-bc6b-4346-a60a-9117902afbd9",
                             BookId = "b8c55736-422e-49d3-9dc3-d406bdd53d8c",
                             Deleted = false,
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 858, DateTimeKind.Local).AddTicks(4274),
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 966, DateTimeKind.Local).AddTicks(2164),
                             PageNumber = 48,
                             UserIdentifier = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
                         });
@@ -177,14 +179,14 @@ namespace DAL.Migrations
                             GenreId = "95ea0beb-e05b-4dcf-a4cb-a91cce095d19",
                             Deleted = false,
                             GenreName = "Fantasy",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 855, DateTimeKind.Local).AddTicks(5618)
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 963, DateTimeKind.Local).AddTicks(3156)
                         },
                         new
                         {
                             GenreId = "7a4f9a69-3afd-4dae-829a-ae4691a415db",
                             Deleted = false,
                             GenreName = "Sci-Fi",
-                            LastUpdated = new DateTime(2019, 5, 20, 2, 54, 37, 857, DateTimeKind.Local).AddTicks(1060)
+                            LastUpdated = new DateTime(2019, 5, 20, 2, 53, 16, 964, DateTimeKind.Local).AddTicks(9384)
                         });
                 });
 
@@ -202,20 +204,6 @@ namespace DAL.Migrations
                     b.HasAlternateKey("UserId");
 
                     b.ToTable("User");
-
-                    b.HasData(
-                        new
-                        {
-                            UserName = "amocsari",
-                            Password = "12Wasd34",
-                            UserId = "87d92da2-13df-47d5-85d7-b3f0fc3d99ba"
-                        },
-                        new
-                        {
-                            UserName = "teszt",
-                            Password = "12Wasd34",
-                            UserId = "46c15a9b-9184-46d5-a77e-ca21cd5cbe6f"
-                        });
                 });
 
             modelBuilder.Entity("DAL.Entity.UserBook", b =>

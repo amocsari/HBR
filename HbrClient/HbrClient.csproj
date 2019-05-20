@@ -91,6 +91,7 @@
     <Compile Include="Model\Dto\BookmarkDto.cs" />
     <Compile Include="Model\Dto\ClientBookmarkDto.cs" />
     <Compile Include="Model\Dto\GenreDto.cs" />
+    <Compile Include="Model\IClientDto.cs" />
     <Compile Include="Model\Request\Bookmark\AddBookmarkRequest.cs" />
     <Compile Include="Model\Request\Bookmark\DeleteBookmarkRequest.cs" />
     <Compile Include="Model\Request\Bookmark\GetBookmarksForBookRequest.cs" />

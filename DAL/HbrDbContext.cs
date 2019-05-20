@@ -34,7 +34,8 @@ namespace DAL
                 .SeedGenres()
                 .SeedBooks()
                 .SeedBookmarks()
-                .SeedUserBooks();
+                .SeedUserBooks()
+                .SeedUsers();
         }
 
         public DbSet<Book> Book { get; set; }

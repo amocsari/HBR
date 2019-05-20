@@ -1,4 +1,5 @@
-﻿using HbrClient.Model.Dto;
+﻿using HbrClient.Model;
+using HbrClient.Model.Dto;
 using SQLite;
 using System.Collections.Generic;
 
@@ -79,13 +80,13 @@ namespace HbrClient
             }
         }
 
-        public List<T> SelectTable<T>() where T : new()
+        public List<T> SelectTable<T>() where T : IClientDto, new()
         {
             try
             {
                 using (var connection = new SQLiteConnection(System.IO.Path.Combine(dbPath, dbName)))
                 {
-                    return connection.Table<T>().ToList();
+                    return connection.Table<T>().Where(row => row.UserIdentifier == HbrApplication.UserIdentifier).ToList();
                 }
             }
             catch (SQLiteException ex)
