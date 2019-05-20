@@ -7,6 +7,11 @@
       android:title="Bejelentkezés"
       app:showAsAction="never" />
   <item
+      android:id="@+id/menuItem_query_book"
+      android:orderInCategory="100"
+      android:title="Új könyv felvétele"
+      app:showAsAction="never" />
+  <item
       android:id="@+id/menuItem_account_logout"
       android:orderInCategory="100"
       android:title="Kijelentkezés"

@@ -3205,17 +3205,20 @@ namespace HbrClient
 			// aapt resource value: 0x7f0900e2
 			public const int menuItem_account_login = 2131296482;
 			
-			// aapt resource value: 0x7f0900e3
-			public const int menuItem_account_logout = 2131296483;
-			
-			// aapt resource value: 0x7f0900e6
-			public const int menuItem_libraryItem_delete = 2131296486;
-			
 			// aapt resource value: 0x7f0900e4
-			public const int menuItem_libraryItem_details = 2131296484;
+			public const int menuItem_account_logout = 2131296484;
+			
+			// aapt resource value: 0x7f0900e7
+			public const int menuItem_libraryItem_delete = 2131296487;
 			
 			// aapt resource value: 0x7f0900e5
-			public const int menuItem_libraryItem_updateProgress = 2131296485;
+			public const int menuItem_libraryItem_details = 2131296485;
+			
+			// aapt resource value: 0x7f0900e6
+			public const int menuItem_libraryItem_updateProgress = 2131296486;
+			
+			// aapt resource value: 0x7f0900e3
+			public const int menuItem_query_book = 2131296483;
 			
 			// aapt resource value: 0x7f0900d8
 			public const int message = 2131296472;

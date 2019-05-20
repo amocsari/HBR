@@ -31,8 +31,6 @@ namespace HbrClient
         private const int get_file_request_code = 1001;
         private const int sign_in_response_code = 2001;
         private LibraryAdapter mAdapter = new LibraryAdapter();
-        string AuthorQuery;
-        string TitleQuery;
         Database _database;
 
         protected override async void OnCreate(Bundle savedInstanceState)
@@ -57,14 +55,6 @@ namespace HbrClient
             //TODO: még nincs token cache
             //await SynchronizeWithServer();
 
-            var AuthorQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_author_query);
-            var TitleQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_title_query);
-            var QueryButton = FindViewById<Android.Widget.Button>(Resource.Id.button_queryBook);
-
-            AuthorQueryTextView.Click += AuthorQueryTextViewOnClick;
-            TitleQueryTextView.Click += TitleQueryTextViewOnClick;
-            QueryButton.Click += QueryButtonOnClick;
-
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.floatingActionButton_addBook);
             fab.Click += FabOnClick;
         }
@@ -84,6 +74,10 @@ namespace HbrClient
                     break;
                 case Resource.Id.menuItem_account_logout:
                     Logout();
+                    break;
+                case Resource.Id.menuItem_query_book:
+                    var intent = new Intent(this, typeof(BookQueryActivity));
+                    StartActivity(intent);
                     break;
             }
 
@@ -172,46 +166,6 @@ namespace HbrClient
                 await SyncBookmarksWithServer();
                 await SyncBooksWithServer();
             }
-        }
-
-        private async void QueryButtonOnClick(object sender, EventArgs e)
-        {
-            //var bookList = await GetBooksFromServerAsync(authorQuery: AuthorQuery, titleQuery: TitleQuery);
-            //mAdapter.Library.Clear();
-            //mAdapter.AddBooks(bookList);
-
-            //AuthorQuery = string.Empty;
-            //TitleQuery = string.Empty;
-        }
-
-        private async void AuthorQueryTextViewOnClick(object sender, EventArgs e)
-        {
-            var config = new PromptConfig
-            {
-                Title = "Szerző",
-                Text = AuthorQuery,
-                OkText = "Rendben",
-                CancelText = "Mégse"
-            };
-            var result = await UserDialogs.Instance.PromptAsync(config);
-
-            if (result.Ok)
-                AuthorQuery = result.Text;
-        }
-
-        private async void TitleQueryTextViewOnClick(object sender, EventArgs e)
-        {
-            var config = new PromptConfig
-            {
-                Title = "Cím",
-                Text = TitleQuery,
-                OkText = "Rendben",
-                CancelText = "Mégse"
-            };
-            var result = await UserDialogs.Instance.PromptAsync(config);
-
-            if (result.Ok)
-                TitleQuery = result.Text;
         }
 
         private async void FabOnClick(object sender, EventArgs eventArgs)

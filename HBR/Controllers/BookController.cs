@@ -22,8 +22,8 @@ namespace HBR.Controllers
             _blobStorageService = blobStorageService;
         }
 
-        [HttpGet]
-        public Task<List<BookDto>> QueryBooks(QueryBooksRequest request)
+        [HttpPost]
+        public Task<List<BookDto>> QueryBooks([FromBody]QueryBooksRequest request)
         {
             return _bookService.QueryBooks(request);
         }

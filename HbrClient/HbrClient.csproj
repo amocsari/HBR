@@ -77,6 +77,8 @@
     <Compile Include="Auth\TokenCacheHelper.cs" />
     <Compile Include="Bookmark\BookmarkAdapter.cs" />
     <Compile Include="Bookmark\BookmarkViewHolder.cs" />
+    <Compile Include="BookQuery\BookQueryAdapter.cs" />
+    <Compile Include="BookQuery\QueryBookViewHolder.cs" />
     <Compile Include="Database.cs">
       <SubType>Code</SubType>
     </Compile>
