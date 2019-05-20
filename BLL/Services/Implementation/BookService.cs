@@ -70,7 +70,15 @@ namespace BLL.Services.Implementation
             entity.Extension = "pdf";
             entity.UploaderIdentifier = userIdentifier;
 
+            var newUserBook = new UserBook
+            {
+                BookId = entity.BookId,
+                Progress = 0,
+                UserIdentifier = userIdentifier
+            };
+
             await _context.Book.AddAsync(entity);
+            await _context.UserBooks.AddAsync(newUserBook);
             await _context.SaveChangesAsync();
 
             var newEntity = await _context.Book
