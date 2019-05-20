@@ -10,16 +10,16 @@ namespace HBR.Controllers
 {
     public class AccountController: BaseController
     {
-        private readonly IHbrDbContext _hbrDbContext;
+        private readonly IHbrDbContext _context;
         public AccountController(IHbrDbContext hbrDbContext)
         {
-            _hbrDbContext = hbrDbContext;
+            _context = hbrDbContext;
         }
 
         [HttpPost]
-        public async Task<string> LoginUser(LoginRequest request)
+        public async Task<string> LoginUser([FromBody]LoginRequest request)
         {
-            var user = await _hbrDbContext.User.FirstOrDefaultAsync(u => u.UserName == request.UserName && u.Password == request.Password)
+            var user = await _context.User.FirstOrDefaultAsync(u => u.UserName == request.UserName && u.Password == request.Password)
                 ?? throw new HbrException("Sikertelen bejelentkezes");
 
             return user.UserId;
