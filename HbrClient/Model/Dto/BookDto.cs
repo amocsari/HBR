@@ -6,6 +6,7 @@ namespace HbrClient.Model.Dto
 {
     public class BookDto
     {
+        [PrimaryKey]
         public string BookId { get; set; }
 
         public string Isbn { get; set; }

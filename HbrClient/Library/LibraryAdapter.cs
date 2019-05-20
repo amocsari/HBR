@@ -171,16 +171,16 @@ namespace HbrClient.Library
             NotifyDataSetChanged();
         }
 
-        public void UpdateBook(ClientBookDto returnedBook)
+        public void UpdateBook(ClientBookDto newBook)
         {
-            var oldBook = Library.FirstOrDefault(b => b.BookId == returnedBook.BookId);
-            oldBook.Author = returnedBook.Author;
-            oldBook.Title = returnedBook.Title;
-            oldBook.Isbn = returnedBook.Isbn;
-            oldBook.GenreId = returnedBook.GenreId;
-            oldBook.Genre = returnedBook.Genre;
-            oldBook.Bookmarks = returnedBook.Bookmarks;
-            oldBook.PageNumber = returnedBook.PageNumber;
+            var oldBook = Library.FirstOrDefault(b => b.BookId == newBook.BookId);
+            oldBook.Author = newBook.Author;
+            oldBook.Title = newBook.Title;
+            oldBook.Isbn = newBook.Isbn;
+            oldBook.GenreId = newBook.GenreId;
+            oldBook.Genre = newBook.Genre;
+            oldBook.Bookmarks = newBook.Bookmarks;
+            oldBook.PageNumber = newBook.PageNumber;
             NotifyDataSetChanged();
         }
 

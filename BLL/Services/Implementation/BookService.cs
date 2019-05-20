@@ -189,9 +189,11 @@ namespace BLL.Services.Implementation
             return _mapper.Map<List<BookDto>>(bookList);
         }
 
-        public async Task<List<BookDto>> QueryBooks(QueryBooksRequest request)
+        public async Task<List<BookDto>> QueryBooks(QueryBooksRequest request, string userIdentifier)
         {
-            var bookQuery = _context.Book
+            var bookQuery = _context.UserBooks
+                .Where(ub => ub.UserIdentifier != userIdentifier)
+                .Select(ub => ub.Book)
                 .Include(b => b.Genre)
                 .AsNoTracking();
 

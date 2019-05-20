@@ -11,7 +11,7 @@ namespace BLL.Services.Interface
     {
         Task<BookDto> AddNewBook(AddOrEditBookRequest request, string userIdentifier);
 
-        Task<List<BookDto>> QueryBooks(QueryBooksRequest request);
+        Task<List<BookDto>> QueryBooks(QueryBooksRequest request, string userIdentifier);
 
         Task DeleteBookById(DeleteBookByIdRequest request, string userIdentifier);
 

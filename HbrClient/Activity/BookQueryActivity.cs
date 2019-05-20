@@ -32,7 +32,7 @@ namespace HbrClient
             var TitleQueryTextView = FindViewById<Android.Widget.TextView>(Resource.Id.tv_title_query);
             var QueryButton = FindViewById<Android.Widget.Button>(Resource.Id.button_queryBook);
 
-            var mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView_bookList);
+            var mRecyclerView = FindViewById<RecyclerView>(Resource.Id.recyclerView_bookQueryList);
             mRecyclerView.SetAdapter(mAdapter);
             mAdapter.RecyclerView = mRecyclerView;
             mAdapter.Context = this;
@@ -45,6 +45,9 @@ namespace HbrClient
 
         private async void QueryButtonOnClick(object sender, EventArgs e)
         {
+            if (!CheckInternetConnection())
+                await UserDialogs.Instance.AlertAsync("Ez a funkció csak internetkapcsolattal érhető el!", "Nincs internetkapcsolat!");
+
             mAdapter.Clear();
             var bookList = await QueryBooksFromServerAsync();
             mAdapter.AddBooks(bookList);
@@ -56,8 +59,8 @@ namespace HbrClient
         private async Task<List<ClientBookDto>> QueryBooksFromServerAsync()
         {
             using (var client = new HttpClient())
-            using (var dialog = UserDialogs.Instance.Loading("Loading"))
             {
+                var dialog = UserDialogs.Instance.Loading("Loading");
                 var request = new QueryBooksRequest
                 {
                     Author = AuthorQuery,
@@ -81,6 +84,7 @@ namespace HbrClient
                     return new List<ClientBookDto>();
                 }
 
+                dialog.Dispose();
                 return await result.Content.ReadAsAsync<List<ClientBookDto>>();
             }
         }

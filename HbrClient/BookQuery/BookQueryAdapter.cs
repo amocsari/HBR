@@ -30,6 +30,7 @@ namespace HbrClient.BookQuery
             var queryBookViewHolder = holder as QueryBookViewHolder;
             queryBookViewHolder.AuthorTextView.Text = QueryResult[position].Author;
             queryBookViewHolder.TitleTextView.Text = QueryResult[position].Title;
+            queryBookViewHolder.ItemView.Click += OnClick;
         }
 
         public override ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
@@ -37,7 +38,6 @@ namespace HbrClient.BookQuery
             var libraryItemView = LayoutInflater.From(parent.Context).Inflate(Resource.Layout.view_library_item, parent, false);
 
             QueryBookViewHolder queryBookViewHolder = new QueryBookViewHolder(libraryItemView);
-            parent.Click += OnClick;
 
             return queryBookViewHolder;
         }
@@ -57,13 +57,11 @@ namespace HbrClient.BookQuery
                 return;
 
             using (var client = new HttpClient())
-            using (var dialog = UserDialogs.Instance.Loading("Loading"))
             {
+                var dialog = UserDialogs.Instance.Loading("Loading");
                 var view = (View)sender;
                 var position = RecyclerView.GetChildAdapterPosition(view);
                 var book = QueryResult[position];
-
-                _database.AddElement(book);
 
                 var request = new AddBookToShelfRequest
                 {
@@ -75,8 +73,11 @@ namespace HbrClient.BookQuery
                 };
                 await client.PostAsJsonAsync("https://hbr.azurewebsites.net/api/book/addbooktoshelf", request);
 
+                _database.AddElement(book);
+
                 QueryResult.RemoveAt(position);
                 NotifyDataSetChanged();
+                dialog.Dispose();
             }
         }
 

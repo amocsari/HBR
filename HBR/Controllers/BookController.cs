@@ -25,7 +25,10 @@ namespace HBR.Controllers
         [HttpPost]
         public Task<List<BookDto>> QueryBooks([FromBody]QueryBooksRequest request)
         {
-            return _bookService.QueryBooks(request);
+            //return _bookService.QueryBooks(request, UserId);
+            #region tmp ki lesz veve
+            return _bookService.QueryBooks(request, request.UserIdentifier);
+            #endregion
         }
 
         [HttpGet]
